@@ -29,6 +29,90 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+    }
+
+    /* Language Switcher */
+    .lang-switcher {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-family: 'Albert Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .lang-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .lang-toggle svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .lang-toggle .chevron {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .lang-switcher.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .lang-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      min-width: 140px;
+    }
+
+    .lang-switcher.open .lang-dropdown {
+      display: block;
+    }
+
+    .lang-option {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      background: none;
+      font-family: 'Albert Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.1s ease;
+    }
+
+    .lang-option:hover {
+      background: #f5f5f7;
+    }
+
+    .lang-option.active {
+      color: #888;
     }
 
     .profile-image {
@@ -214,12 +298,24 @@
 </head>
 <body>
   <div class="container">
+    <div class="lang-switcher" id="langSwitcher">
+      <button class="lang-toggle" onclick="toggleDropdown()">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        <span id="langLabel">LANGUAGE</span>
+        <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+      <div class="lang-dropdown">
+        <button class="lang-option active" id="optJa" onclick="setLang('ja')">日本語</button>
+        <button class="lang-option" id="optEn" onclick="setLang('en')">English</button>
+      </div>
+    </div>
+
     <img
       src="profile.jpeg"
       alt="Taiyo Aono"
       class="profile-image"
     >
-    <h1 class="profile-name">Taiyo Aono</h1>
+    <h1 class="profile-name" id="profileName">青野 大洋</h1>
 
     <div class="social-icons">
       <!-- Email -->
@@ -246,17 +342,8 @@
 
     <div class="link-list">
       <div class="link-card">
-        <div class="link-card-title">青野 大洋 / JP</div>
-        <div class="link-card-content">
-          慶應義塾大学環境情報学部 気象学研究会（宮本研）2年（←神奈川県立湘南高校←横浜国大附属鎌倉小中） | メンター@Life is Tech! | インターン@2WINS | UT-Labメンバー | 自然科学の社会応用に興味があります。最近は天気の勉強やAIの勉強など。一緒にバイブコーディングしましょう。
-        </div>
-      </div>
-
-      <div class="link-card">
-        <div class="link-card-title">Taiyo Aono / EN</div>
-        <div class="link-card-content">
-          I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I'm currently diving into weather data and AI. Let's vibe-code!
-        </div>
+        <div class="link-card-title" id="aboutTitle">自己紹介</div>
+        <div class="link-card-content" id="aboutContent">慶應義塾大学環境情報学部 気象学研究会（宮本研）2年（←神奈川県立湘南高校←横浜国大附属鎌倉小中） | メンター@Life is Tech! | インターン@2WINS | UT-Labメンバー | 自然科学の社会応用に興味があります。最近は天気の勉強やAIの勉強など。一緒にバイブコーディングしましょう。</div>
       </div>
     </div>
 
@@ -275,8 +362,8 @@
           </div>
         </div>
         <div class="work-card-body">
-          <div class="work-card-name">That Sky <span class="work-card-copy">— あの日、あの場所、あの空に、もう一度会いに行く。</span></div>
-          <div class="work-card-desc">過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。</div>
+          <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— あの日、あの場所、あの空に、もう一度会いに行く。</span></div>
+          <div class="work-card-desc" id="thatskyDesc">過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。</div>
           <div class="work-card-tags">
             <span class="tag">Sky</span>
             <span class="tag">Image generation AI</span>
@@ -286,5 +373,56 @@
       </a>
     </div>
   </div>
+
+  <script>
+    const content = {
+      ja: {
+        name: '青野 大洋',
+        langLabel: 'JP',
+        aboutTitle: '自己紹介',
+        aboutContent: '慶應義塾大学環境情報学部 気象学研究会（宮本研）2年（←神奈川県立湘南高校←横浜国大附属鎌倉小中） | メンター@Life is Tech! | インターン@2WINS | UT-Labメンバー | 自然科学の社会応用に興味があります。最近は天気の勉強やAIの勉強など。一緒にバイブコーディングしましょう。',
+        thatskyCopy: '— あの日、あの場所、あの空に、もう一度会いに行く。',
+        thatskyDesc: '過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。'
+      },
+      en: {
+        name: 'Taiyo Aono',
+        langLabel: 'EN',
+        aboutTitle: 'About Me',
+        aboutContent: 'I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I\'m currently diving into weather data and AI. Let\'s vibe-code!',
+        thatskyCopy: '— Revisit the sky of that day, that place, once more.',
+        thatskyDesc: 'A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn\'t you like to see it?'
+      }
+    };
+
+    let currentLang = 'ja';
+
+    function toggleDropdown() {
+      document.getElementById('langSwitcher').classList.toggle('open');
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      const c = content[lang];
+      document.getElementById('profileName').textContent = c.name;
+      document.getElementById('aboutTitle').textContent = c.aboutTitle;
+      document.getElementById('aboutContent').textContent = c.aboutContent;
+      document.getElementById('thatskyCopy').textContent = c.thatskyCopy;
+      document.getElementById('thatskyDesc').textContent = c.thatskyDesc;
+      document.documentElement.lang = lang;
+
+      document.getElementById('optJa').classList.toggle('active', lang === 'ja');
+      document.getElementById('optEn').classList.toggle('active', lang === 'en');
+
+      toggleDropdown();
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const switcher = document.getElementById('langSwitcher');
+      if (!switcher.contains(e.target)) {
+        switcher.classList.remove('open');
+      }
+    });
+  </script>
 </body>
 </html>
