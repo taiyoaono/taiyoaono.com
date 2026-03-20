@@ -6,7 +6,7 @@
   <title>Taiyo Aono</title>
   <meta name="description" content="Taiyo Aono - Keio University SFC / Meteorology Lab">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -100,6 +100,116 @@
       height: 28px;
       fill: currentColor;
     }
+
+    /* Works Section */
+    .works-section {
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .work-card {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .work-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .work-card-preview {
+      background: #1a1a2e;
+      border-bottom: 1px solid #eceef1;
+      padding: 20px 20px 0;
+    }
+
+    .browser-frame {
+      background: #2a2a3e;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+    }
+
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: #1e1e30;
+    }
+
+    .browser-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #444;
+    }
+
+    .browser-url {
+      flex: 1;
+      margin-left: 8px;
+      font-size: 11px;
+      color: #777;
+      background: #2a2a3e;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .browser-frame img {
+      width: 100%;
+      display: block;
+    }
+
+    .work-card-body {
+      padding: 20px 24px 24px;
+    }
+
+    .work-card-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .work-card-copy {
+      font-size: 14px;
+      font-weight: 300;
+      color: #999;
+    }
+
+    .work-card-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 14px;
+    }
+
+    .work-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      color: #666;
+      background: #f0f1f3;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
   </style>
 </head>
 <body>
@@ -148,6 +258,32 @@
           I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I'm currently diving into weather data and AI. Let's vibe-code!
         </div>
       </div>
+    </div>
+
+    <div class="works-section">
+      <div class="section-title">Works</div>
+      <a href="https://that-sky.com" target="_blank" rel="noopener" class="work-card">
+        <div class="work-card-preview">
+          <div class="browser-frame">
+            <div class="browser-bar">
+              <span class="browser-dot"></span>
+              <span class="browser-dot"></span>
+              <span class="browser-dot"></span>
+              <span class="browser-url">that-sky.com</span>
+            </div>
+            <img src="thatsky-preview.png" alt="That Sky preview">
+          </div>
+        </div>
+        <div class="work-card-body">
+          <div class="work-card-name">That Sky <span class="work-card-copy">— あの日、あの場所、あの空に、もう一度会いに行く。</span></div>
+          <div class="work-card-desc">過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。</div>
+          <div class="work-card-tags">
+            <span class="tag">Sky</span>
+            <span class="tag">Image generation AI</span>
+            <span class="tag">Web</span>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 </body>
