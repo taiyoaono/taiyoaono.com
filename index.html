@@ -371,6 +371,8 @@
     function setLang(lang) {
       const c = content[lang];
       document.getElementById('profileName').textContent = c.name;
+      document.getElementById('profileName').style.fontFamily = lang === 'ja' ? "'Yu Gothic', 'YuGothic', sans-serif" : "'Albert Sans', sans-serif";
+      document.getElementById('profileName').style.fontWeight = lang === 'ja' ? '700' : '600';
       document.getElementById('aboutTitle').textContent = c.aboutTitle;
       document.getElementById('aboutContent').textContent = c.aboutContent;
       document.getElementById('thatskyCopy').textContent = c.thatskyCopy;
