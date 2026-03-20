@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Taiyo Aono</title>
   <meta name="description" content="Taiyo Aono - Keio University SFC / Meteorology Lab">
+  <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -40,28 +41,49 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      background: #e0e2e6;
+      background: #d8dade;
       border-radius: 100px;
       padding: 3px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .lang-slider {
+      position: absolute;
+      top: 3px;
+      height: calc(100% - 6px);
+      width: 50%;
+      background: linear-gradient(to bottom, #ffffff, #f5f5f7);
+      border-radius: 100px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+      transition: left 0.25s ease;
+      left: 50%;
+    }
+
+    .lang-switcher[data-lang="en"] .lang-slider {
+      left: 3px;
+    }
+
+    .lang-switcher[data-lang="ja"] .lang-slider {
+      left: calc(50% - 0px);
     }
 
     .lang-option {
       border: none;
       background: none;
       font-family: 'Albert Sans', sans-serif;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 500;
       color: #888;
-      padding: 6px 14px;
+      padding: 8px 18px;
       border-radius: 100px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: color 0.2s ease;
+      position: relative;
+      z-index: 1;
     }
 
     .lang-option.active {
-      background: #ffffff;
       color: #1a1a1a;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
 
     .profile-image {
@@ -74,7 +96,7 @@
     }
 
     .profile-name {
-      font-size: 20px;
+      font-size: 28px;
       font-weight: 600;
       color: #1a1a1a;
       margin-bottom: 24px;
@@ -146,7 +168,7 @@
       color: #888;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
 
     .work-card {
@@ -248,9 +270,10 @@
 </head>
 <body>
   <div class="container">
-    <div class="lang-switcher">
-      <button class="lang-option active" id="optJa" onclick="setLang('ja')">JP</button>
-      <button class="lang-option" id="optEn" onclick="setLang('en')">EN</button>
+    <div class="lang-switcher" id="langSwitcher" data-lang="en">
+      <div class="lang-slider"></div>
+      <button class="lang-option active" id="optEn" onclick="setLang('en')">EN</button>
+      <button class="lang-option" id="optJa" onclick="setLang('ja')">JP</button>
     </div>
 
     <img
@@ -258,7 +281,7 @@
       alt="Taiyo Aono"
       class="profile-image"
     >
-    <h1 class="profile-name" id="profileName">青野 大洋</h1>
+    <h1 class="profile-name" id="profileName">Taiyo Aono</h1>
 
     <div class="social-icons">
       <!-- Email -->
@@ -284,14 +307,14 @@
     </div>
 
     <div class="link-list">
+      <div class="section-title" id="aboutTitle">About Me</div>
       <div class="link-card">
-        <div class="link-card-title" id="aboutTitle">自己紹介</div>
-        <div class="link-card-content" id="aboutContent">慶應義塾大学環境情報学部 気象学研究会（宮本研）2年（←神奈川県立湘南高校←横浜国大附属鎌倉小中） | メンター@Life is Tech! | インターン@2WINS | UT-Labメンバー | 自然科学の社会応用に興味があります。最近は天気の勉強やAIの勉強など。一緒にバイブコーディングしましょう。</div>
+        <div class="link-card-content" id="aboutContent">I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I'm currently diving into weather data and AI. Let's vibe-code!</div>
       </div>
     </div>
 
     <div class="works-section">
-      <div class="section-title">Works</div>
+      <div class="section-title" id="worksTitle">Works</div>
       <a href="https://that-sky.com" target="_blank" rel="noopener" class="work-card">
         <div class="work-card-preview">
           <div class="browser-frame">
@@ -305,10 +328,9 @@
           </div>
         </div>
         <div class="work-card-body">
-          <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— あの日、あの場所、あの空に、もう一度会いに行く。</span></div>
-          <div class="work-card-desc" id="thatskyDesc">過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。</div>
+          <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— Revisit the sky of that day, that place, once more.</span></div>
+          <div class="work-card-desc" id="thatskyDesc">A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn't you like to see it?</div>
           <div class="work-card-tags">
-            <span class="tag">Sky</span>
             <span class="tag">Image generation AI</span>
             <span class="tag">Web</span>
           </div>
@@ -325,7 +347,8 @@
         aboutTitle: '自己紹介',
         aboutContent: '慶應義塾大学環境情報学部 気象学研究会（宮本研）2年（←神奈川県立湘南高校←横浜国大附属鎌倉小中） | メンター@Life is Tech! | インターン@2WINS | UT-Labメンバー | 自然科学の社会応用に興味があります。最近は天気の勉強やAIの勉強など。一緒にバイブコーディングしましょう。',
         thatskyCopy: '— あの日、あの場所、あの空に、もう一度会いに行く。',
-        thatskyDesc: '過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。'
+        thatskyDesc: '過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。',
+        worksTitle: 'プロダクト'
       },
       en: {
         name: 'Taiyo Aono',
@@ -333,7 +356,8 @@
         aboutTitle: 'About Me',
         aboutContent: 'I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I\'m currently diving into weather data and AI. Let\'s vibe-code!',
         thatskyCopy: '— Revisit the sky of that day, that place, once more.',
-        thatskyDesc: 'A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn\'t you like to see it?'
+        thatskyDesc: 'A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn\'t you like to see it?',
+        worksTitle: 'Works'
       }
     };
 
@@ -344,6 +368,8 @@
       document.getElementById('aboutContent').textContent = c.aboutContent;
       document.getElementById('thatskyCopy').textContent = c.thatskyCopy;
       document.getElementById('thatskyDesc').textContent = c.thatskyDesc;
+      document.getElementById('worksTitle').textContent = c.worksTitle;
+      document.getElementById('langSwitcher').dataset.lang = lang;
       document.documentElement.lang = lang;
 
       document.getElementById('optJa').classList.toggle('active', lang === 'ja');
