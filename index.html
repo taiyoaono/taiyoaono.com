@@ -69,15 +69,17 @@
 
     .lang-option {
       border: none;
-      background: none;
+      background: transparent;
       font-family: 'Albert Sans', sans-serif;
       font-size: 15px;
       font-weight: 500;
       color: #888;
       padding: 8px 18px;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
       border-radius: 100px;
       cursor: pointer;
-      transition: color 0.2s ease;
+      transition: color 0.25s ease 0.05s;
       position: relative;
       z-index: 1;
     }
@@ -100,6 +102,11 @@
       font-weight: 600;
       color: #1a1a1a;
       margin-bottom: 24px;
+      height: 40px;
+      line-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .link-list {
@@ -281,7 +288,7 @@
       alt="Taiyo Aono"
       class="profile-image"
     >
-    <h1 class="profile-name" id="profileName">Taiyo Aono</h1>
+    <h1 class="profile-name fade-content" id="profileName">Taiyo Aono</h1>
 
     <div class="social-icons">
       <!-- Email -->
@@ -307,14 +314,14 @@
     </div>
 
     <div class="link-list">
-      <div class="section-title" id="aboutTitle">About Me</div>
-      <div class="link-card">
+      <div class="section-title fade-content" id="aboutTitle">About Me</div>
+      <div class="link-card fade-content">
         <div class="link-card-content" id="aboutContent">I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I'm currently diving into weather data and AI. Let's vibe-code!</div>
       </div>
     </div>
 
     <div class="works-section">
-      <div class="section-title" id="worksTitle">Works</div>
+      <div class="section-title fade-content" id="worksTitle">Works</div>
       <a href="https://that-sky.com" target="_blank" rel="noopener" class="work-card">
         <div class="work-card-preview">
           <div class="browser-frame">
@@ -327,7 +334,7 @@
             <img src="thatsky-preview.png" alt="That Sky preview">
           </div>
         </div>
-        <div class="work-card-body">
+        <div class="work-card-body fade-content">
           <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— Revisit the sky of that day, that place, once more.</span></div>
           <div class="work-card-desc" id="thatskyDesc">A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn't you like to see it?</div>
           <div class="work-card-tags">
