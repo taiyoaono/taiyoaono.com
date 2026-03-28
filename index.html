@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -348,8 +348,8 @@
   <div class="container">
     <div class="lang-switcher" id="langSwitcher">
       <div class="lang-slider" id="langSlider"></div>
-      <button class="lang-option active" id="optEn" style="padding-left:13px;padding-right:15px">EN</button>
-      <button class="lang-option" id="optJa">JP</button>
+      <button class="lang-option active" id="optJa" style="padding-left:13px;padding-right:15px">JP</button>
+      <button class="lang-option" id="optEn">EN</button>
     </div>
 
     <img
@@ -357,7 +357,7 @@
       alt="Taiyo Aono"
       class="profile-image"
     >
-    <h1 class="profile-name fade-content" id="profileName">Taiyo Aono</h1>
+    <h1 class="profile-name fade-content" id="profileName" style="font-family:'Yu Gothic','YuGothic',sans-serif;font-weight:600">青野 大洋</h1>
 
     <div class="social-icons">
       <!-- Email -->
@@ -383,14 +383,14 @@
     </div>
 
     <div class="link-list">
-      <div class="section-title fade-content" id="aboutTitle">About Me</div>
+      <div class="section-title fade-content" id="aboutTitle">自己紹介</div>
       <div class="link-card fade-content">
-        <div class="link-card-content" id="aboutContent">I am a sophomore at Keio University SFC, majoring in meteorology at the Miyamoto Lab. Currently, I serve as a instructor at Life is Tech Inc. (conducting corporate IT training) and an intern at 2WINS Inc. (AI startup incubated at the University of Tokyo). My passion lies in the social application of natural sciences, and I'm currently diving into weather data and AI. Let's build something exciting together!</div>
+        <div class="link-card-content" id="aboutContent">慶應義塾大学環境情報学部 <a href="https://met-lab.sfc.keio.ac.jp/wordpress/" target="_blank">気象学研究会（宮本研）</a>3年←神奈川県立湘南高校←横浜国大附属鎌倉小中<br>東大松尾研発AIスタートアップ <a href="https://www.2wins.ai" target="_blank">2WINS（株）</a>で事業開発など<br><a href="https://life-is-tech.com" target="_blank">Life is Tech!（株）</a>で企業向けIT研修など<br><a href="https://ut-lab.toggle.co.jp" target="_blank">UT-Lab</a>メンバー<br>理学的な環境や自然と、実学的な社会や経済活動、どちらにも強い関心があり、またそれらがテクノロジーで繋がっていくさまにもワクワクします。<br>最近は気ままに天気の勉強、山登りやスキーなどをしています。<br><br>近況<br>・Take off Tokyo 3/31行きます<br>・Sushi Tech Tokyo ITAMAEで4/29行きます<br>・革命的なレストラン検索アプリを４月にリリースします</div>
       </div>
     </div>
 
     <div class="music-section">
-      <div class="section-title fade-content" id="musicTitle">My Playlist</div>
+      <div class="section-title fade-content" id="musicTitle">好きな曲</div>
       <a href="https://music.apple.com/jp/playlist/favorite-songs/pl.u-r0URLmKlRG?l=en" target="_blank" rel="noopener" class="music-card">
         <div class="music-card-artwork">
           <img src="favorite-star.png" alt="Favorite Songs">
@@ -409,14 +409,14 @@
     </div>
 
     <div class="works-section">
-      <div class="section-title fade-content" id="worksTitle">Works</div>
+      <div class="section-title fade-content" id="worksTitle">プロダクト</div>
       <a href="https://that-sky.com" target="_blank" rel="noopener" class="work-card">
         <div class="work-card-preview">
           <img src="thatsky-preview.png" alt="That Sky preview">
         </div>
         <div class="work-card-body fade-content">
-          <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— Revisit the sky of that day, that place, once more.</span></div>
-          <div class="work-card-desc" id="thatskyDesc">A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn't you like to see it?</div>
+          <div class="work-card-name">That Sky <span class="work-card-copy" id="thatskyCopy">— あの日、あの場所、あの空に、もう一度会いに行く。</span></div>
+          <div class="work-card-desc" id="thatskyDesc">過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。</div>
           <div class="work-card-tags">
             <span class="tag">Image generation AI</span>
             <span class="tag">Web</span>
@@ -450,7 +450,7 @@
       }
     };
 
-    let currentLang = 'en';
+    let currentLang = 'ja';
     const slider = document.getElementById('langSlider');
     const switcher = document.getElementById('langSwitcher');
 
@@ -460,7 +460,7 @@
       const switcherRect = switcher.getBoundingClientRect();
       const pad = 3;
       const sliderW = (switcherRect.width - pad * 2) / 2;
-      if (lang === 'en') {
+      if (lang === 'ja') {
         slider.style.left = pad + 'px';
       } else {
         slider.style.left = (pad + sliderW) + 'px';
@@ -487,7 +487,7 @@
     }
 
     // Init slider position
-    updateSliderPos('en', false);
+    updateSliderPos('ja', false);
     requestAnimationFrame(() => slider.classList.remove('dragging'));
 
     // Touch/mouse drag support
@@ -533,7 +533,7 @@
         // Tap: figure out which button was tapped
         const rect = switcher.getBoundingClientRect();
         const tapX = getX(e) - rect.left;
-        const newLang = tapX < rect.width / 2 ? 'en' : 'ja';
+        const newLang = tapX < rect.width / 2 ? 'ja' : 'en';
         updateSliderPos(newLang, true);
         if (newLang !== currentLang) setLang(newLang, false);
       } else {
@@ -543,7 +543,7 @@
         const sliderW = (switcherRect.width - pad * 2) / 2;
         const currentLeft = parseFloat(slider.style.left);
         const midpoint = pad + sliderW / 2;
-        const newLang = currentLeft < midpoint ? 'en' : 'ja';
+        const newLang = currentLeft < midpoint ? 'ja' : 'en';
         updateSliderPos(newLang, true);
         if (newLang !== currentLang) setLang(newLang, false);
       }
