@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AI's Weekly Report for CEO — System Overview</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;900&display=swap');
@@ -10,18 +10,20 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #0a0a0a;
-    --fg: #f5f5f5;
-    --accent: #4A7AC7;
-    --accent-dim: rgba(74, 122, 199, 0.15);
-    --gray: #888;
-    --gray-dim: #333;
-    --slide-height: 100vh;
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --accent: #2563EB;
+    --accent-dim: rgba(37, 99, 235, 0.06);
+    --accent-border: rgba(37, 99, 235, 0.15);
+    --gray: #6b7280;
+    --gray-dim: #d1d5db;
+    --gray-light: #f3f4f6;
   }
 
   html {
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
@@ -29,26 +31,27 @@
     background: var(--bg);
     color: var(--fg);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
   .slide {
-    min-height: var(--slide-height);
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 60px 40px;
+    padding: 48px 24px;
     scroll-snap-align: start;
     position: relative;
     overflow: hidden;
   }
 
   .slide-inner {
-    max-width: 900px;
+    max-width: 720px;
     width: 100%;
     opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
   }
 
   .slide-inner.visible {
@@ -56,12 +59,11 @@
     transform: translateY(0);
   }
 
-  /* Slide number */
   .slide-number {
     position: absolute;
-    top: 40px;
-    right: 40px;
-    font-size: 14px;
+    top: 24px;
+    right: 24px;
+    font-size: 13px;
     color: var(--gray-dim);
     font-weight: 300;
     letter-spacing: 2px;
@@ -69,116 +71,106 @@
 
   /* Typography */
   .headline {
-    font-size: clamp(32px, 5vw, 56px);
+    font-size: clamp(26px, 5.5vw, 48px);
     font-weight: 900;
-    line-height: 1.2;
-    letter-spacing: -1px;
-    margin-bottom: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
   }
 
-  .headline .accent {
-    color: var(--accent);
-  }
+  .headline .accent { color: var(--accent); }
 
   .subtext {
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(15px, 2.2vw, 18px);
     font-weight: 300;
     color: var(--gray);
-    line-height: 1.8;
-    max-width: 700px;
+    line-height: 1.9;
+    max-width: 600px;
   }
 
   /* Title slide */
-  .title-slide {
-    text-align: center;
-  }
-
-  .title-slide .logo {
-    width: 80px;
-    margin-bottom: 32px;
-    opacity: 0.9;
-  }
+  .title-slide { text-align: center; }
 
   .title-slide .headline {
-    font-size: clamp(36px, 6vw, 64px);
-    margin-bottom: 16px;
+    font-size: clamp(30px, 7vw, 56px);
+    margin-bottom: 12px;
   }
 
   .title-slide .subtitle {
-    font-size: 18px;
+    font-size: clamp(13px, 2vw, 16px);
     color: var(--gray);
-    font-weight: 300;
-    letter-spacing: 4px;
+    font-weight: 400;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    margin-bottom: 48px;
+    margin-bottom: 40px;
   }
 
   .title-slide .meta {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--gray-dim);
     letter-spacing: 1px;
   }
 
-  /* Quote style for Q&A slides */
+  /* Q&A slides */
   .question {
-    font-size: clamp(18px, 2.5vw, 24px);
+    font-size: clamp(15px, 2.5vw, 20px);
     font-weight: 400;
     color: var(--gray);
-    margin-bottom: 20px;
-    padding-left: 20px;
+    margin-bottom: 24px;
+    padding-left: 16px;
     border-left: 3px solid var(--accent);
-    font-style: italic;
+    line-height: 1.6;
   }
 
   .answer {
-    font-size: clamp(20px, 3vw, 32px);
+    font-size: clamp(18px, 3.5vw, 28px);
     font-weight: 700;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  /* Feature list */
+  /* Feature grid */
   .features {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-top: 40px;
+    gap: 16px;
+    margin-top: 32px;
   }
 
   .feature {
-    padding: 24px;
+    padding: 20px;
     background: var(--accent-dim);
-    border-radius: 12px;
-    border: 1px solid rgba(74, 122, 199, 0.1);
+    border-radius: 10px;
+    border: 1px solid var(--accent-border);
   }
 
   .feature .label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--accent);
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .feature .value {
-    font-size: 18px;
+    font-size: clamp(14px, 2vw, 16px);
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.5;
+    color: var(--fg);
   }
 
-  /* Divider line */
+  /* Divider */
   .divider {
-    width: 60px;
+    width: 48px;
     height: 2px;
     background: var(--accent);
-    margin: 32px 0;
+    margin: 24px 0;
   }
 
   /* Final slide */
   .final .headline {
-    font-size: clamp(40px, 7vw, 80px);
+    font-size: clamp(34px, 8vw, 72px);
     text-align: center;
-    font-weight: 900;
   }
 
   .final .subtext {
@@ -189,29 +181,30 @@
   /* Scroll indicator */
   .scroll-indicator {
     position: fixed;
-    bottom: 30px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     opacity: 0.3;
     transition: opacity 0.3s;
     pointer-events: none;
+    z-index: 50;
   }
 
   .scroll-indicator.hidden { opacity: 0; }
 
   .scroll-indicator span {
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 2px;
     color: var(--gray);
   }
 
   .scroll-indicator .arrow {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-right: 1.5px solid var(--gray);
     border-bottom: 1.5px solid var(--gray);
     transform: rotate(45deg);
@@ -220,7 +213,7 @@
 
   @keyframes bounce {
     0%, 100% { transform: rotate(45deg) translateY(0); }
-    50% { transform: rotate(45deg) translateY(6px); }
+    50% { transform: rotate(45deg) translateY(5px); }
   }
 
   /* Progress bar */
@@ -234,11 +227,39 @@
     transition: width 0.3s ease;
   }
 
-  /* Responsive */
+  /* Slide 5 fact/ai demo */
+  .demo-fact {
+    font-size: clamp(15px, 2vw, 17px);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    color: var(--fg);
+  }
+
+  .demo-ai {
+    font-size: clamp(14px, 1.8vw, 16px);
+    line-height: 1.7;
+    padding: 16px 20px;
+    border-left: 3px solid var(--gray-dim);
+    color: var(--gray);
+    background: var(--gray-light);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* Mobile */
   @media (max-width: 600px) {
-    .slide { padding: 40px 24px; }
-    .features { grid-template-columns: 1fr; }
-    .slide-number { top: 20px; right: 20px; }
+    .slide { padding: 40px 20px; }
+    .features { grid-template-columns: 1fr; gap: 12px; }
+    .feature { padding: 16px; }
+    .slide-number { top: 16px; right: 16px; font-size: 12px; }
+    .headline { margin-bottom: 16px; }
+    .divider { margin: 20px 0; }
+    .question { padding-left: 12px; margin-bottom: 20px; }
+  }
+
+  @media (max-width: 380px) {
+    .headline { font-size: 24px; }
+    .title-slide .headline { font-size: 28px; }
+    .answer { font-size: 18px; }
   }
 </style>
 </head>
@@ -251,9 +272,9 @@
   <div class="slide-inner">
     <div class="subtitle">2WINS Inc.</div>
     <div class="headline">AI's Weekly Report<br><span class="accent">for CEO</span></div>
-    <div class="divider" style="margin: 32px auto;"></div>
+    <div class="divider" style="margin: 28px auto;"></div>
     <div class="subtext" style="margin: 0 auto;">System Overview</div>
-    <div class="meta" style="margin-top: 48px;">Presented by 青野 大洋 — 2026</div>
+    <div class="meta" style="margin-top: 40px;">Presented by 青野 大洋 — 2026</div>
   </div>
 </div>
 
@@ -288,7 +309,7 @@
 <div class="slide">
   <div class="slide-inner">
     <span class="slide-number">02</span>
-    <div class="headline">毎週金曜の朝6時、<br>AIが<span class="accent">1つのレポート</span>にまとめて届ける</div>
+    <div class="headline">毎週金曜の朝6時、<br>AIが<span class="accent">1つのレポート</span>に<br>まとめて届ける</div>
     <div class="divider"></div>
     <div class="subtext">Slackに届くPDF。開くだけ。<br>前の週の金曜から木曜までの7日間を、自動で分析・構造化。</div>
   </div>
@@ -318,9 +339,12 @@
 <div class="slide">
   <div class="slide-inner">
     <span class="slide-number">05</span>
-    <div class="headline">事実は<span style="color:#fff;">黒</span>。<br>AIの示唆は<span class="accent">グレー</span>。</div>
+    <div class="headline">事実は<span style="color: var(--fg); font-weight: 900;">黒</span>。<br>AIの示唆は<span class="accent">グレー</span>。</div>
     <div class="divider"></div>
-    <div class="subtext">何がファクトで何がAIの意見か、一目でわかる。<br>CEOが自分で判断できるフォーマット。</div>
+    <div style="margin-top: 8px;">
+      <div class="demo-fact">3/25に九電みらいエナジーのPoC最終報告会を実施。八丁原発電所への横展開で年間8-12億円の損失回避効果を提示した。</div>
+      <div class="demo-ai">約300万円のPoCから年間8-12億円規模の提案に昇華できた。このパターンを他のエネルギー案件でも再現できるか、検証する価値がある。</div>
+    </div>
   </div>
 </div>
 
@@ -365,9 +389,13 @@
 <div class="slide">
   <div class="slide-inner">
     <span class="slide-number">08</span>
-    <div class="headline">最後に、<span class="accent">答えのない問い</span>を<br>投げかける</div>
+    <div class="headline">最後に、<br><span class="accent">答えのない問い</span>を<br>投げかける</div>
     <div class="divider"></div>
-    <div class="subtext">CEOの思考を止めずに、次の1週間に向かわせる。<br>「もし来月、案件の半分を切れと言われたら、どれを残す？」<br>答えは書かない。考え続けてもらう。</div>
+    <div class="subtext">CEOの思考を止めずに、次の1週間に向かわせる。</div>
+    <div style="margin-top: 28px;">
+      <div class="demo-ai" style="border-left-color: var(--accent); background: var(--accent-dim);">もし来月、案件の半分を切れと言われたら、どれを残す？</div>
+    </div>
+    <div class="subtext" style="margin-top: 16px;">答えは書かない。考え続けてもらう。</div>
   </div>
 </div>
 
@@ -385,17 +413,16 @@
   <div class="slide-inner">
     <span class="slide-number">10</span>
     <div class="question">「青野くんに俺のメール見られてない？」</div>
-    <div class="answer">運用責任者はCEOのデータに<span class="accent">一切触れません。</span><br>プロンプトとシステムだけを磨き続けます。</div>
+    <div class="answer">運用責任者はCEOのデータに<br><span class="accent">一切触れません。</span><br>プロンプトとシステムだけを<br>磨き続けます。</div>
   </div>
 </div>
 
 <!-- Slide 11: Final -->
 <div class="slide final">
   <div class="slide-inner">
-    <span class="slide-number">11</span>
     <div class="headline"><span class="accent">来週から、</span><br>届きます。</div>
-    <div class="divider" style="margin: 32px auto;"></div>
-    <div class="subtext">AI's Weekly Report for CEO — powered by Claude</div>
+    <div class="divider" style="margin: 28px auto;"></div>
+    <div class="subtext">AI's Weekly Report for CEO<br>powered by Claude</div>
   </div>
 </div>
 
@@ -405,31 +432,21 @@
 </div>
 
 <script>
-  // Intersection Observer for slide animations
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+      if (entry.isIntersecting) entry.target.classList.add('visible');
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.2 });
 
   document.querySelectorAll('.slide-inner').forEach(el => observer.observe(el));
 
-  // Progress bar
   window.addEventListener('scroll', () => {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = (scrollTop / docHeight) * 100;
     document.getElementById('progress').style.width = progress + '%';
-
-    // Hide scroll indicator after first scroll
-    if (scrollTop > 100) {
-      document.getElementById('scrollIndicator').classList.add('hidden');
-    } else {
-      document.getElementById('scrollIndicator').classList.remove('hidden');
-    }
-  });
+    document.getElementById('scrollIndicator').classList.toggle('hidden', scrollTop > 80);
+  }, { passive: true });
 </script>
 
 </body>
