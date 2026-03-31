@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI's Weekly Report for CEO — System Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f5f5f5;
+    --accent: #4A7AC7;
+    --accent-dim: rgba(74, 122, 199, 0.15);
+    --gray: #888;
+    --gray-dim: #333;
+    --slide-height: 100vh;
+  }
+
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    overflow-x: hidden;
+  }
+
+  .slide {
+    min-height: var(--slide-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 40px;
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide-inner {
+    max-width: 900px;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .slide-inner.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Slide number */
+  .slide-number {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    font-size: 14px;
+    color: var(--gray-dim);
+    font-weight: 300;
+    letter-spacing: 2px;
+  }
+
+  /* Typography */
+  .headline {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  .headline .accent {
+    color: var(--accent);
+  }
+
+  .subtext {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 300;
+    color: var(--gray);
+    line-height: 1.8;
+    max-width: 700px;
+  }
+
+  /* Title slide */
+  .title-slide {
+    text-align: center;
+  }
+
+  .title-slide .logo {
+    width: 80px;
+    margin-bottom: 32px;
+    opacity: 0.9;
+  }
+
+  .title-slide .headline {
+    font-size: clamp(36px, 6vw, 64px);
+    margin-bottom: 16px;
+  }
+
+  .title-slide .subtitle {
+    font-size: 18px;
+    color: var(--gray);
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .title-slide .meta {
+    font-size: 13px;
+    color: var(--gray-dim);
+    letter-spacing: 1px;
+  }
+
+  /* Quote style for Q&A slides */
+  .question {
+    font-size: clamp(18px, 2.5vw, 24px);
+    font-weight: 400;
+    color: var(--gray);
+    margin-bottom: 20px;
+    padding-left: 20px;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+  }
+
+  .answer {
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* Feature list */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .feature {
+    padding: 24px;
+    background: var(--accent-dim);
+    border-radius: 12px;
+    border: 1px solid rgba(74, 122, 199, 0.1);
+  }
+
+  .feature .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .feature .value {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Divider line */
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 32px 0;
+  }
+
+  /* Final slide */
+  .final .headline {
+    font-size: clamp(40px, 7vw, 80px);
+    text-align: center;
+    font-weight: 900;
+  }
+
+  .final .subtext {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .scroll-indicator.hidden { opacity: 0; }
+
+  .scroll-indicator span {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gray);
+  }
+
+  .scroll-indicator .arrow {
+    width: 20px;
+    height: 20px;
+    border-right: 1.5px solid var(--gray);
+    border-bottom: 1.5px solid var(--gray);
+    transform: rotate(45deg);
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: rotate(45deg) translateY(0); }
+    50% { transform: rotate(45deg) translateY(6px); }
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 100;
+    transition: width 0.3s ease;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .slide { padding: 40px 24px; }
+    .features { grid-template-columns: 1fr; }
+    .slide-number { top: 20px; right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- Slide 0: Title -->
+<div class="slide title-slide">
+  <div class="slide-inner">
+    <div class="subtitle">2WINS Inc.</div>
+    <div class="headline">AI's Weekly Report<br><span class="accent">for CEO</span></div>
+    <div class="divider" style="margin: 32px auto;"></div>
+    <div class="subtext" style="margin: 0 auto;">System Overview</div>
+    <div class="meta" style="margin-top: 48px;">Presented by 青野 大洋 — 2026</div>
+  </div>
+</div>
+
+<!-- Slide 1 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">01</span>
+    <div class="headline">CEOの1週間は、<br><span class="accent">3つの場所</span>に散らばっている</div>
+    <div class="divider"></div>
+    <div class="features">
+      <div class="feature">
+        <div class="label">Slack</div>
+        <div class="value">全チャンネルの会話・意思決定・進捗</div>
+      </div>
+      <div class="feature">
+        <div class="label">Gmail</div>
+        <div class="value">クライアントとのやり取り・契約・法務</div>
+      </div>
+      <div class="feature">
+        <div class="label">Google Calendar</div>
+        <div class="value">MTG・予定・デッドライン</div>
+      </div>
+      <div class="feature">
+        <div class="label">課題</div>
+        <div class="value">全体像を把握するのに、時間が足りない</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">02</span>
+    <div class="headline">毎週金曜の朝6時、<br>AIが<span class="accent">1つのレポート</span>にまとめて届ける</div>
+    <div class="divider"></div>
+    <div class="subtext">Slackに届くPDF。開くだけ。<br>前の週の金曜から木曜までの7日間を、自動で分析・構造化。</div>
+  </div>
+</div>
+
+<!-- Slide 3 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">03</span>
+    <div class="headline">ただの要約じゃない。<br><span class="accent">全データ</span>を読み込んでいる</div>
+    <div class="divider"></div>
+    <div class="subtext">全チャンネルのメッセージ。全メール。全予定。<br>スレッドの返信まで含めて、1件も漏らさず分析する。</div>
+  </div>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">04</span>
+    <div class="headline">クライアントの<span class="accent">カルテ</span>を<br>蓄積している</div>
+    <div class="divider"></div>
+    <div class="subtext">先週までの文脈を知った上で、今週を分析する。<br>初回は過去1年分のデータからカルテを自動生成。<br>毎週、新しい情報でカルテが更新される。</div>
+  </div>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">05</span>
+    <div class="headline">事実は<span style="color:#fff;">黒</span>。<br>AIの示唆は<span class="accent">グレー</span>。</div>
+    <div class="divider"></div>
+    <div class="subtext">何がファクトで何がAIの意見か、一目でわかる。<br>CEOが自分で判断できるフォーマット。</div>
+  </div>
+</div>
+
+<!-- Slide 6 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">06</span>
+    <div class="headline">「全部順調です」とは<br><span class="accent">言わない</span></div>
+    <div class="divider"></div>
+    <div class="subtext">案件ごとのリスクも正直に書く。<br>停滞している案件、崩れうるポイント、放置すると危険な兆候。<br>CEOが聞きたい話ではなく、聞くべき話を届ける。</div>
+  </div>
+</div>
+
+<!-- Slide 7 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">07</span>
+    <div class="headline"><span class="accent">AI業界の動向</span>も<br>毎週自動で収集</div>
+    <div class="divider"></div>
+    <div class="features">
+      <div class="feature">
+        <div class="label">松尾研発 42社</div>
+        <div class="value">同じエコシステムの企業の動きを追跡</div>
+      </div>
+      <div class="feature">
+        <div class="label">国内AIトレンド</div>
+        <div class="value">政策・導入事例・市場動向</div>
+      </div>
+      <div class="feature">
+        <div class="label">海外AIトレンド</div>
+        <div class="value">a16z, YC, HBR, TechCrunch</div>
+      </div>
+      <div class="feature">
+        <div class="label">深さ</div>
+        <div class="value">記事の中身まで読み、2WINSへの示唆を添える</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">08</span>
+    <div class="headline">最後に、<span class="accent">答えのない問い</span>を<br>投げかける</div>
+    <div class="divider"></div>
+    <div class="subtext">CEOの思考を止めずに、次の1週間に向かわせる。<br>「もし来月、案件の半分を切れと言われたら、どれを残す？」<br>答えは書かない。考え続けてもらう。</div>
+  </div>
+</div>
+
+<!-- Slide 9 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">09</span>
+    <div class="question">「誰かのPCが動いてないと届かないの？」</div>
+    <div class="answer">いいえ。<span class="accent">クラウド上で完全自動実行。</span><br>誰のPCにも依存しません。<br>毎週、勝手に届きます。</div>
+  </div>
+</div>
+
+<!-- Slide 10 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">10</span>
+    <div class="question">「青野くんに俺のメール見られてない？」</div>
+    <div class="answer">運用責任者はCEOのデータに<span class="accent">一切触れません。</span><br>プロンプトとシステムだけを磨き続けます。</div>
+  </div>
+</div>
+
+<!-- Slide 11: Final -->
+<div class="slide final">
+  <div class="slide-inner">
+    <span class="slide-number">11</span>
+    <div class="headline"><span class="accent">来週から、</span><br>届きます。</div>
+    <div class="divider" style="margin: 32px auto;"></div>
+    <div class="subtext">AI's Weekly Report for CEO — powered by Claude</div>
+  </div>
+</div>
+
+<div class="scroll-indicator" id="scrollIndicator">
+  <span>SCROLL</span>
+  <div class="arrow"></div>
+</div>
+
+<script>
+  // Intersection Observer for slide animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.slide-inner').forEach(el => observer.observe(el));
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progress').style.width = progress + '%';
+
+    // Hide scroll indicator after first scroll
+    if (scrollTop > 100) {
+      document.getElementById('scrollIndicator').classList.add('hidden');
+    } else {
+      document.getElementById('scrollIndicator').classList.remove('hidden');
+    }
+  });
+</script>
+
+</body>
+</html>
