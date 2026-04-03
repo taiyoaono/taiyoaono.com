@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI's Weekly Report for CEO — System Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --accent: #2563EB;
+    --accent-dim: rgba(37, 99, 235, 0.06);
+    --accent-border: rgba(37, 99, 235, 0.15);
+    --gray: #4b5563;
+    --gray-dim: #d1d5db;
+    --gray-light: #f3f4f6;
+  }
+
+  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    background: var(--bg); color: var(--fg);
+    overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  }
+
+  .slide {
+    min-height: 100svh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 48px 40px; scroll-snap-align: start;
+    position: relative; overflow: hidden;
+  }
+
+  .slide-inner {
+    max-width: 960px; width: 100%;
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .slide-inner.visible { opacity: 1; transform: translateY(0); }
+
+  .slide-number {
+    position: absolute; top: 28px; right: 36px;
+    font-size: 14px; color: var(--gray-dim); font-weight: 300; letter-spacing: 2px;
+  }
+
+  .headline {
+    font-size: clamp(34px, 6.5vw, 64px); font-weight: 900;
+    line-height: 1.25; letter-spacing: -1px; margin-bottom: 24px;
+  }
+  .headline .accent { color: var(--accent); }
+
+  .subtext {
+    font-size: clamp(18px, 2.5vw, 24px); font-weight: 400;
+    color: var(--gray); line-height: 1.8; max-width: 800px;
+  }
+
+  .title-slide { text-align: center; }
+  .title-slide .headline { font-size: clamp(38px, 8vw, 72px); margin-bottom: 16px; }
+  .title-slide .subtitle {
+    font-size: clamp(15px, 2.2vw, 20px); color: var(--gray);
+    font-weight: 400; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 48px;
+  }
+  .title-slide .meta { font-size: 14px; color: var(--gray); letter-spacing: 1px; }
+
+  .question {
+    font-size: clamp(18px, 3vw, 26px); font-weight: 400; color: var(--gray);
+    margin-bottom: 28px; padding-left: 20px; border-left: 3px solid var(--accent); line-height: 1.6;
+  }
+
+  .answer { font-size: clamp(22px, 4vw, 36px); font-weight: 700; line-height: 1.5; }
+
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 36px; }
+  .feature {
+    padding: 24px; background: var(--accent-dim);
+    border-radius: 12px; border: 1px solid var(--accent-border);
+  }
+  .feature .label {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .feature .value { font-size: clamp(16px, 2.2vw, 19px); font-weight: 500; line-height: 1.5; color: var(--fg); }
+
+  .divider { width: 56px; height: 3px; background: var(--accent); margin: 28px 0; }
+
+  .section-label {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+  }
+
+  .final .headline { font-size: clamp(42px, 10vw, 88px); text-align: center; }
+  .final .subtext { text-align: center; margin: 0 auto; }
+
+  .demo-fact {
+    font-size: clamp(17px, 2.2vw, 20px); line-height: 1.7; margin-bottom: 20px; color: var(--fg);
+  }
+  .demo-ai {
+    font-size: clamp(16px, 2vw, 19px); line-height: 1.7;
+    padding: 20px 24px; border-left: 4px solid var(--gray-dim);
+    color: var(--gray); background: var(--gray-light); border-radius: 0 10px 10px 0;
+  }
+
+  .flow {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-top: 28px; font-size: clamp(15px, 2vw, 18px);
+  }
+  .flow-step {
+    padding: 10px 18px; background: var(--accent-dim); border-radius: 10px;
+    border: 1px solid var(--accent-border); font-weight: 500; white-space: nowrap;
+  }
+  .flow-arrow { color: var(--accent); font-weight: 300; font-size: 22px; }
+
+  .scroll-indicator {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0.3; transition: opacity 0.3s; pointer-events: none; z-index: 50;
+  }
+  .scroll-indicator.hidden { opacity: 0; }
+  .scroll-indicator span { font-size: 11px; letter-spacing: 2px; color: var(--gray); }
+  .scroll-indicator .arrow {
+    width: 18px; height: 18px;
+    border-right: 1.5px solid var(--gray); border-bottom: 1.5px solid var(--gray);
+    transform: rotate(45deg); animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: rotate(45deg) translateY(0); }
+    50% { transform: rotate(45deg) translateY(5px); }
+  }
+
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 100; transition: width 0.3s ease; }
+
+  @media (max-width: 600px) {
+    .slide { padding: 40px 24px; }
+    .slide-inner { max-width: 100%; }
+    .features { grid-template-columns: 1fr; gap: 14px; }
+    .feature { padding: 18px; }
+    .slide-number { top: 16px; right: 20px; font-size: 12px; }
+    .headline { margin-bottom: 18px; }
+    .divider { margin: 22px 0; }
+    .question { padding-left: 14px; margin-bottom: 22px; }
+    .flow { gap: 8px; }
+    .flow-step { padding: 8px 12px; font-size: 14px; }
+  }
+  @media (max-width: 380px) {
+    .headline { font-size: 28px; }
+    .title-slide .headline { font-size: 32px; }
+    .answer { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- Title -->
+<div class="slide title-slide">
+  <div class="slide-inner">
+    <div class="subtitle">2WINS Inc.</div>
+    <div class="headline">AI's Weekly Report<br><span class="accent">for CEO</span></div>
+    <div class="divider" style="margin: 32px auto;"></div>
+    <div class="subtext" style="margin: 0 auto;">System Overview</div>
+    <div class="meta" style="margin-top: 48px;">Presented by 青野 大洋 — 2026</div>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">01</span>
+    <div class="headline">CEOは<span class="accent">忙しすぎる</span></div>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">02</span>
+    <div class="headline">でも情報は待ってくれない</div>
+    <div class="divider"></div>
+    <div class="subtext">Slack、Gmail、カレンダー。<br>毎日増え続けるのに、集約されない。蓄積もされない。</div>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">03</span>
+    <div class="headline">本来、CEOの時間は<br><span class="accent">意思決定</span>のためにある</div>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">04</span>
+    <div class="headline">だから、情報を集めて<br>整理する仕事は<br><span class="accent">AIに任せる</span>ことにしました</div>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">05</span>
+    <div class="headline">毎週金曜の朝6時、<br>AIがCEOの1週間を<br><span class="accent">1つのレポート</span>にまとめて届ける</div>
+    <div class="divider"></div>
+    <div class="subtext">Slackに届くPDF。開くだけ。<br>前の週の金曜から木曜までの7日間を、自動で分析・構造化。</div>
+  </div>
+</div>
+
+<!-- 6 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">06</span>
+    <div class="headline">ただの要約じゃない。<br><span class="accent">全データ</span>を読み込んでいる</div>
+    <div class="divider"></div>
+    <div class="subtext">全チャンネルのメッセージ。全メール。全予定。<br>スレッドの返信まで含めて、1件も漏らさず分析する。</div>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">07</span>
+    <div class="headline">クライアントの<span class="accent">カルテ</span>を<br>蓄積している</div>
+    <div class="divider"></div>
+    <div class="subtext">先週までの文脈を知った上で、今週を分析する。<br>初回は過去1年分のデータからカルテを自動生成。<br>毎週、新しい情報でカルテが更新される。</div>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">08</span>
+    <div class="headline">各案件を<span class="accent">2WINSモデル</span>の<br>3段階で評価する</div>
+    <div class="divider"></div>
+    <div class="features">
+      <div class="feature">
+        <div class="label">Stage 1</div>
+        <div class="value">クライアント社内チームとしてPoC実施</div>
+      </div>
+      <div class="feature">
+        <div class="label">Stage 2</div>
+        <div class="value">成果物の横展開・共同事業化</div>
+      </div>
+      <div class="feature">
+        <div class="label">Stage 3</div>
+        <div class="value">KPI連動・プロフィットシェア</div>
+      </div>
+      <div class="feature">
+        <div class="label">レポートでは</div>
+        <div class="value">今どこにいて、次に何が必要かを示す</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">09</span>
+    <div class="headline"><span class="accent">2WINSを知っている</span>AIが書く</div>
+    <div class="divider"></div>
+    <div class="features" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="feature" style="text-align: center;">
+        <div class="label">読み込み済み</div>
+        <div class="value" style="font-size: clamp(28px, 4vw, 40px); margin-bottom: 4px;">📄</div>
+        <div class="value">会社紹介資料</div>
+      </div>
+      <div class="feature" style="text-align: center;">
+        <div class="label">読み込み済み</div>
+        <div class="value" style="font-size: clamp(28px, 4vw, 40px); margin-bottom: 4px;">📋</div>
+        <div class="value">AIソリューション<br>事例集</div>
+      </div>
+      <div class="feature" style="text-align: center;">
+        <div class="label">読み込み済み</div>
+        <div class="value" style="font-size: clamp(28px, 4vw, 40px); margin-bottom: 4px;">👥</div>
+        <div class="value">組織図</div>
+      </div>
+    </div>
+    <div class="subtext" style="margin-top: 32px;">事業内容、技術スタック、チーム体制、過去の実績。<br>全てを理解した上で、<strong>2WINSの文脈でしか出せない示唆</strong>を書く。</div>
+  </div>
+</div>
+
+<!-- 9 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">10</span>
+    <div class="headline">事実は<span style="color: var(--fg); font-weight: 900;">黒</span>。<br>AIの示唆は<span class="accent">グレー</span>。</div>
+    <div class="divider"></div>
+    <div style="margin-top: 12px;">
+      <div class="demo-fact">3/25に九電みらいエナジーのPoC最終報告会を実施。八丁原発電所への横展開で年間8-12億円の損失回避効果を提示した。</div>
+      <div class="demo-ai">【Stage 1 → Stage 2移行中】約300万円のPoCから年間8-12億円規模の提案に昇華できた。Phase2の自動監視システム受注が、2WINSモデルのStage 2確立の試金石になる。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">11</span>
+    <div class="headline">「全部順調です」とは<br><span class="accent">言わない</span></div>
+    <div class="divider"></div>
+    <div class="subtext">案件ごとのリスクも正直に書く。<br>停滞している案件、崩れうるポイント、放置すると危険な兆候。<br>CEOが聞きたい話ではなく、聞くべき話を届ける。</div>
+  </div>
+</div>
+
+<!-- 11 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">12</span>
+    <div class="headline"><span class="accent">AI業界の動向</span>も<br>毎週自動で収集</div>
+    <div class="divider"></div>
+    <div class="features">
+      <div class="feature">
+        <div class="label">松尾研発 42社</div>
+        <div class="value">同じエコシステムの企業の動きを追跡</div>
+      </div>
+      <div class="feature">
+        <div class="label">国内AIトレンド</div>
+        <div class="value">政策・導入事例・市場動向</div>
+      </div>
+      <div class="feature">
+        <div class="label">海外AIトレンド</div>
+        <div class="value">a16z, YC, HBR, TechCrunch</div>
+      </div>
+      <div class="feature">
+        <div class="label">深さ</div>
+        <div class="value">記事の中身まで読み、2WINSの案件・技術と紐づけた示唆を出す</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 12 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">13</span>
+    <div class="headline">最後に、<br><span class="accent">答えのない問い</span>を<br>投げかける</div>
+    <div class="divider"></div>
+    <div class="subtext">CEOの思考を止めずに、次の1週間に向かわせる。</div>
+    <div style="margin-top: 32px;">
+      <div class="demo-ai" style="border-left-color: var(--accent); background: var(--accent-dim);">もし来月、案件の半分を切れと言われたら、どれを残す？</div>
+    </div>
+    <div class="subtext" style="margin-top: 20px;">答えは書かない。考え続けてもらう。</div>
+  </div>
+</div>
+
+<!-- 時間軸スライド -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">14</span>
+    <div class="headline">Slack、Gmail、Calendar。<br>散らばった全てを、<span class="accent">一発で構造化する</span></div>
+    <div class="divider"></div>
+    <div class="flow" style="justify-content: center;">
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>過去</strong><br><span style="font-size: 12px; color: var(--gray);">案件・社内の事実</span></span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>現在</strong><br><span style="font-size: 12px; color: var(--gray);">課題 🔴🟡</span></span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>洞察</strong><br><span style="font-size: 12px; color: var(--gray);">構造的な示唆</span></span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>未来</strong><br><span style="font-size: 12px; color: var(--gray);">推奨アクション</span></span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>外部</strong><br><span style="font-size: 12px; color: var(--gray);">AI業界動向</span></span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step" style="text-align: center; min-width: 100px;"><strong>思考</strong><br><span style="font-size: 12px; color: var(--gray);">CEOへの問い</span></span>
+    </div>
+    <div class="subtext" style="margin-top: 32px;">重複なく、漏れなく。<br>CEOが必要とする情報を、考える順番で届ける。</div>
+  </div>
+</div>
+
+<!-- 裏側の仕組み -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">15</span>
+    <div class="section-label">裏側の仕組み</div>
+    <div class="headline">全自動。<span class="accent">毎週勝手に届く</span></div>
+    <div class="divider"></div>
+    <div class="flow">
+      <span class="flow-step">Slack API</span>
+      <span class="flow-step">Gmail API</span>
+      <span class="flow-step">Calendar API</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Claude API</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">PDF変換</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">Slack配信</span>
+    </div>
+    <div class="subtext" style="margin-top: 28px;">全てGitHub Actionsで毎週自動実行。<br>誰のPCにも依存しません。</div>
+  </div>
+</div>
+
+<!-- 14 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">16</span>
+    <div class="section-label">裏側の仕組み</div>
+    <div class="headline">知識が<span class="accent">毎週厚くなる</span></div>
+    <div class="divider"></div>
+    <div class="subtext">クライアントカルテはGitリポジトリに蓄積。<br>毎週のレポート生成後にAIがカルテを更新し、自動コミット。<br>使うほど、レポートの深さが増していく。</div>
+  </div>
+</div>
+
+<!-- 15 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">17</span>
+    <div class="question">「青野くんに俺のメール見られてない？」</div>
+    <div class="answer">運用責任者はCEOのデータに<br><span class="accent">一切触れません。</span><br>プロンプトとシステムだけを<br>磨き続けます。</div>
+  </div>
+</div>
+
+<!-- 16 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">18</span>
+    <div class="question">「APIの認証情報が外部に漏洩しない？」</div>
+    <div class="answer">全てのトークンは<span class="accent">GitHub Secretsに暗号化保存。</span><br>コード上にもログにも一切表示されず、<br>実行時にのみ復号されます。<br>リポジトリはprivate設定です。</div>
+  </div>
+</div>
+
+<!-- 17 -->
+<div class="slide">
+  <div class="slide-inner">
+    <span class="slide-number">19</span>
+    <div class="headline">このレポートは、<br><span class="accent">あなたのため</span>のものです</div>
+    <div class="divider"></div>
+    <div class="subtext">分量が多い・少ない。セクションを追加したい。<br>こういう情報がほしい。<br><br>なんでもカスタマイズできます。<br>全て青野に言ってください。</div>
+  </div>
+</div>
+
+<!-- 18 -->
+<div class="slide final">
+  <div class="slide-inner">
+    <div class="headline"><span class="accent">これから、</span><br>届きます。</div>
+    <div class="divider" style="margin: 32px auto;"></div>
+    <div class="subtext">AI's Weekly Report for CEO<br>powered by Claude</div>
+  </div>
+</div>
+
+<div class="scroll-indicator" id="scrollIndicator">
+  <span>SCROLL</span>
+  <div class="arrow"></div>
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.slide-inner').forEach(el => observer.observe(el));
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    document.getElementById('progress').style.width = (scrollTop / docHeight) * 100 + '%';
+    document.getElementById('scrollIndicator').classList.toggle('hidden', scrollTop > 80);
+  }, { passive: true });
+
+  // Enter / Space / ArrowDown で次のスライドへ
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const slides = document.querySelectorAll('.slide');
+      const scrollY = window.scrollY;
+      const vh = window.innerHeight;
+      for (const slide of slides) {
+        if (slide.offsetTop > scrollY + vh * 0.3) {
+          slide.scrollIntoView({ behavior: 'smooth' });
+          break;
+        }
+      }
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const slides = [...document.querySelectorAll('.slide')].reverse();
+      const scrollY = window.scrollY;
+      for (const slide of slides) {
+        if (slide.offsetTop < scrollY - 10) {
+          slide.scrollIntoView({ behavior: 'smooth' });
+          break;
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
