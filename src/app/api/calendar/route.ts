@@ -13,15 +13,9 @@ export async function GET(request: NextRequest) {
   const yearStr = searchParams.get("year");
   const monthStr = searchParams.get("month");
 
-  if (!yearStr || !monthStr) {
-    return NextResponse.json(
-      { error: "year and month required" },
-      { status: 400 }
-    );
-  }
-
-  const year = parseInt(yearStr);
-  const month = parseInt(monthStr);
+  const now = new Date();
+  const year = yearStr ? parseInt(yearStr) : now.getFullYear();
+  const month = monthStr ? parseInt(monthStr) : now.getMonth() + 1;
   const cacheKey = `${year}-${month}`;
 
   // Check cache
