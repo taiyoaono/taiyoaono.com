@@ -75,12 +75,33 @@ export default function CalendarSharePage() {
           from { transform: translateX(-50%) translateY(100%); }
           to   { transform: translateX(-50%) translateY(0); }
         }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+          to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
         @keyframes shimmer {
           from { background-position: 200% 0; }
           to   { background-position: -200% 0; }
         }
         .cal-cell-outing:hover {
           background: #e6e9ff !important;
+        }
+        /* PC: centered modal */
+        @media (min-width: 640px) {
+          .modal-sheet {
+            bottom: auto !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            border-radius: 20px !important;
+            max-height: 80vh !important;
+            animation: fadeIn 0.2s ease !important;
+          }
+        }
+        /* Mobile: bottom sheet */
+        @media (max-width: 639px) {
+          .modal-sheet {
+            animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
+          }
         }
       `}</style>
 
@@ -224,20 +245,20 @@ export default function CalendarSharePage() {
           }}
         >
           <div
+            className="modal-sheet"
             onClick={e => e.stopPropagation()}
             style={{
               position: "absolute",
               bottom: 0,
               left: "50%",
               transform: "translateX(-50%)",
-              width: "100%",
+              width: "calc(100% - 32px)",
               maxWidth: 430,
               background: "#ffffff",
               borderRadius: "24px 24px 0 0",
-              boxShadow: "0 -4px 32px rgba(0,0,0,0.12)",
+              boxShadow: "0 -4px 32px rgba(0,0,0,0.16)",
               maxHeight: "75vh",
               overflowY: "auto",
-              animation: "slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
               paddingBottom: 16,
             }}
           >
