@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fandom Mono-Media × 2WINS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6vh 8vw;
+    opacity: 0; transform: translateX(40px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none; background: #fff;
+  }
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .slide.exit { opacity: 0; transform: translateX(-40px); }
+
+  .slide-number {
+    position: absolute; top: 4vh; right: 5vw;
+    font-size: 1rem; color: #ccc; font-weight: 400;
+  }
+
+  .tag {
+    display: inline-block; font-size: 0.85rem; font-weight: 700;
+    color: #4A7BF7; letter-spacing: 0.1em; margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 4.5vw, 4rem); font-weight: 900;
+    line-height: 1.3; margin-bottom: 1.5rem; letter-spacing: -0.02em;
+  }
+  h2 {
+    font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 900;
+    line-height: 1.35; margin-bottom: 1.5rem; letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.6rem); color: #555;
+    line-height: 1.7; max-width: 55ch;
+  }
+  .subtitle strong { color: #1a1a1a; }
+
+  .accent-line {
+    width: 60px; height: 4px; background: #4A7BF7;
+    border-radius: 2px; margin-bottom: 2rem;
+  }
+
+  /* Loop diagram */
+  .loop-container {
+    display: flex; align-items: center; gap: 0;
+    margin-top: 2rem; justify-content: center;
+  }
+  .loop-step {
+    text-align: center; padding: 1.8rem 2.5rem;
+    border-radius: 12px; position: relative;
+  }
+  .loop-step h3 { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.3rem; }
+  .loop-step p { font-size: 0.85rem; color: #777; }
+  .loop-step.emphasis {
+    background: #4A7BF7; color: #fff;
+    border-radius: 12px;
+  }
+  .loop-step.emphasis h3, .loop-step.emphasis p { color: #fff; }
+  .loop-arrow { font-size: 1.8rem; color: #ccc; padding: 0 0.5rem; }
+
+  /* Cards */
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem; margin-top: 2rem;
+  }
+  .card {
+    background: #f8f9fb; border-radius: 12px;
+    padding: 2rem; border: 1px solid #eee;
+  }
+  .card-label {
+    font-size: 0.8rem; font-weight: 700; color: #4A7BF7;
+    margin-bottom: 0.6rem; letter-spacing: 0.05em;
+  }
+  .card h3 {
+    font-size: 1.15rem; font-weight: 700;
+    margin-bottom: 0.8rem; line-height: 1.4;
+  }
+  .card p, .card li { font-size: 0.95rem; color: #555; line-height: 1.7; }
+  .card ul { list-style: none; padding: 0; }
+  .card ul li { padding-left: 1.2em; position: relative; margin-bottom: 0.4rem; }
+  .card ul li::before {
+    content: ''; position: absolute; left: 0; top: 0.65em;
+    width: 6px; height: 6px; background: #4A7BF7; border-radius: 50%;
+  }
+
+  /* Hypothesis callout */
+  .hypothesis {
+    background: #1a1a1a; color: #fff; border-radius: 12px;
+    padding: 2.5rem 3rem; margin-top: 2rem; max-width: 800px;
+  }
+  .hypothesis h3 {
+    font-size: clamp(1.3rem, 2.2vw, 1.8rem); font-weight: 900;
+    line-height: 1.4; margin-bottom: 0.8rem;
+  }
+  .hypothesis p { font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.7; }
+
+  /* Variables */
+  .vars {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 2rem;
+  }
+  .var-card {
+    padding: 2rem; border-radius: 12px;
+    border: 2px solid #eee; position: relative;
+  }
+  .var-card.active-var { border-color: #4A7BF7; background: #f5f8ff; }
+  .var-num {
+    font-size: 3rem; font-weight: 900; color: #eee;
+    position: absolute; top: 1rem; right: 1.5rem; line-height: 1;
+  }
+  .var-card.active-var .var-num { color: #dce6ff; }
+  .var-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .var-card p { font-size: 0.9rem; color: #777; line-height: 1.6; }
+
+  /* Solution slides */
+  .solution-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;
+  }
+  .solution-num {
+    font-size: 0.8rem; font-weight: 700; color: #fff;
+    background: #4A7BF7; border-radius: 6px;
+    padding: 0.3rem 0.7rem; letter-spacing: 0.05em;
+  }
+  .solution-label { font-size: 0.85rem; color: #999; font-weight: 700; }
+
+  .items {
+    display: flex; flex-direction: column; gap: 1rem;
+    margin-top: 1.5rem; max-width: 800px;
+  }
+  .item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1.2rem 1.5rem; background: #f8f9fb;
+    border-radius: 10px; border: 1px solid #eee;
+  }
+  .item-icon {
+    flex-shrink: 0; width: 8px; height: 8px;
+    background: #4A7BF7; border-radius: 50%; margin-top: 0.6rem;
+  }
+  .item-text {
+    font-size: clamp(0.95rem, 1.5vw, 1.15rem); color: #333; line-height: 1.6;
+  }
+  .item-reason {
+    font-size: 0.85rem; color: #999; margin-top: 0.3rem; line-height: 1.5;
+  }
+
+  /* Arch blocks */
+  .arch-row { display: flex; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap; }
+  .arch-block {
+    flex: 1; min-width: 200px; text-align: center;
+    padding: 2rem 1.5rem; border-radius: 12px; border: 2px solid #eee;
+  }
+  .arch-block.highlight { border-color: #4A7BF7; background: #f5f8ff; }
+  .arch-block h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .arch-block p { font-size: 0.9rem; color: #777; line-height: 1.5; }
+  .arch-plus { display: flex; align-items: center; font-size: 2rem; color: #ccc; font-weight: 300; }
+
+  /* Flow */
+  .flow {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 2rem; flex-wrap: wrap;
+  }
+  .flow-step {
+    background: #f8f9fb; border: 1px solid #eee; border-radius: 10px;
+    padding: 1.5rem 2rem; text-align: center; flex: 1; min-width: 180px;
+  }
+  .flow-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .flow-step p { font-size: 0.85rem; color: #777; }
+  .flow-step.active-step { background: #4A7BF7; color: #fff; border-color: #4A7BF7; }
+  .flow-step.active-step h3, .flow-step.active-step p { color: #fff; }
+  .flow-arrow { font-size: 1.5rem; color: #ccc; flex-shrink: 0; }
+
+  /* Roadmap */
+  .roadmap { display: flex; gap: 0; margin-top: 2rem; position: relative; }
+  .phase {
+    flex: 1; padding: 2rem; position: relative;
+    border-left: 3px solid #4A7BF7;
+  }
+  .phase-num {
+    font-size: 0.8rem; font-weight: 700; color: #4A7BF7;
+    letter-spacing: 0.1em; margin-bottom: 0.5rem;
+  }
+  .phase h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem; }
+  .phase p { font-size: 0.9rem; color: #555; line-height: 1.6; }
+  .phase-dot {
+    position: absolute; left: -8px; top: 2rem;
+    width: 13px; height: 13px; background: #4A7BF7;
+    border-radius: 50%; border: 3px solid #fff;
+  }
+
+  /* Title / End slide */
+  .title-slide { align-items: center; text-align: center; }
+  .title-slide h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); }
+  .title-slide .subtitle { max-width: 40ch; margin: 0 auto; }
+  .end-slide { align-items: center; text-align: center; }
+  .end-slide h1 { font-size: clamp(2rem, 4vw, 3.5rem); color: #4A7BF7; }
+
+  /* Progress */
+  .progress {
+    position: fixed; bottom: 0; left: 0; height: 3px;
+    background: #4A7BF7; transition: width 0.4s ease; z-index: 100;
+  }
+  .nav-hint {
+    position: fixed; bottom: 2vh; right: 3vw;
+    font-size: 0.75rem; color: #ccc; z-index: 100;
+  }
+
+  /* Quote */
+  .insight-box {
+    border-left: 4px solid #4A7BF7;
+    padding: 1.2rem 1.5rem;
+    background: #f8f9fb;
+    margin-top: 1.5rem;
+    max-width: 700px;
+    border-radius: 0 8px 8px 0;
+  }
+  .insight-box p {
+    font-size: 1rem; color: #555; line-height: 1.7;
+  }
+  .insight-box strong { color: #1a1a1a; }
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .slide { padding: 4vh 6vw; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .vars { gap: 1rem; }
+    .var-num { font-size: 2.2rem; }
+    .roadmap .phase { padding: 1.5rem; }
+    .roadmap .phase h3 { font-size: 1rem; }
+    .roadmap .phase p { font-size: 0.85rem; }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    body { overflow-y: auto; overflow-x: hidden; }
+
+    .slide {
+      padding: 3vh 5vw;
+      justify-content: flex-start;
+      padding-top: 6vh;
+      height: auto;
+      min-height: 100vh;
+    }
+
+    .slide-number { top: 2vh; right: 4vw; font-size: 0.8rem; }
+
+    .tag { font-size: 0.75rem; margin-bottom: 1rem; }
+
+    h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+    h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .subtitle { font-size: 1rem; }
+
+    .accent-line { width: 40px; height: 3px; margin-bottom: 1.2rem; }
+
+    /* Loop diagram */
+    .loop-container { flex-direction: column; gap: 0; align-items: stretch; }
+    .loop-step { padding: 1rem 1.2rem; }
+    .loop-step h3 { font-size: 1rem; }
+    .loop-step p { font-size: 0.8rem; }
+    .loop-arrow { transform: rotate(90deg); font-size: 1.2rem; padding: 0.2rem 0; text-align: center; }
+
+    /* Cards */
+    .cards { grid-template-columns: 1fr !important; gap: 1rem; margin-top: 1.2rem; }
+    .card { padding: 1.2rem; }
+    .card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .card p, .card li { font-size: 0.85rem; }
+
+    /* Variables */
+    .vars { grid-template-columns: 1fr; gap: 1rem; }
+    .var-card { padding: 1.2rem; }
+    .var-card h3 { font-size: 1rem; }
+    .var-card p { font-size: 0.85rem; }
+    .var-num { font-size: 2rem; top: 0.8rem; right: 1rem; }
+
+    /* Items */
+    .items { gap: 0.8rem; margin-top: 1rem; }
+    .item { padding: 1rem; gap: 0.8rem; }
+    .item-text { font-size: 0.9rem !important; }
+    .item-reason { font-size: 0.8rem; }
+
+    /* Hypothesis */
+    .hypothesis { padding: 1.5rem; margin-top: 1.2rem; }
+    .hypothesis h3 { font-size: 1.1rem; }
+    .hypothesis p { font-size: 0.85rem; }
+
+    /* Insight box */
+    .insight-box { padding: 1rem; margin-top: 1rem; }
+    .insight-box p { font-size: 0.85rem; }
+
+    /* Solution header */
+    .solution-header { margin-bottom: 0.3rem; }
+    .solution-num { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+
+    /* Architecture */
+    .arch-row { flex-direction: column; gap: 1rem; }
+    .arch-block { padding: 1.2rem; min-width: auto; }
+    .arch-block h3 { font-size: 1.1rem !important; margin-bottom: 0.5rem !important; }
+    .arch-block p { font-size: 0.9rem !important; }
+    .arch-plus { justify-content: center; font-size: 1.5rem; }
+
+    /* Flow */
+    .flow { flex-direction: column; gap: 0.8rem; }
+    .flow-step { padding: 1.2rem; min-width: auto; }
+    .flow-arrow { transform: rotate(90deg); font-size: 1.2rem; text-align: center; }
+
+    /* Roadmap */
+    .roadmap { flex-direction: column; }
+    .phase { padding: 1.2rem 1.2rem 1.2rem 1.5rem; }
+    .phase h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .phase p { font-size: 0.85rem; }
+    .phase-dot { left: -8px; }
+
+    /* Title / End */
+    .title-slide h1 { font-size: 2rem; }
+    .end-slide h1 { font-size: 1.6rem; }
+
+    /* Nav hint */
+    .nav-hint { font-size: 0.65rem; bottom: 1vh; right: 2vw; }
+  }
+
+  /* Small mobile */
+  @media (max-width: 380px) {
+    .slide { padding: 2.5vh 4vw; padding-top: 5vh; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.3rem; }
+    .subtitle { font-size: 0.9rem; }
+    .title-slide h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1: Title -->
+  <div class="slide title-slide active" data-slide="1">
+    <span class="slide-number">1 / 14</span>
+    <div class="accent-line" style="margin: 0 auto 2rem auto;"></div>
+    <h1>ファンダム・モノメディア<br>× 2WINS</h1>
+    <p class="subtitle">モノメディアの「ソフトウェア層」を<br>共に作るご提案</p>
+  </div>
+
+  <!-- 2: Understanding the business -->
+  <div class="slide" data-slide="2">
+    <span class="slide-number">2 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">Business Structure</span>
+    <h2>モノメディアの核心は<br>「永続するループ」にある。</h2>
+    <div class="loop-container">
+      <div class="loop-step">
+        <h3>飾る</h3>
+        <p>部屋に置かれ<br>常に視界に入る</p>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <h3>気になる</h3>
+        <p>物理的存在が<br>Attentionを生む</p>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step emphasis">
+        <h3>タッチ</h3>
+        <p>スマホをかざす<br>能動的アクション</p>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <h3>体験</h3>
+        <p>限定コンテンツ<br>に触れる</p>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step">
+        <h3>満足</h3>
+        <p>次の更新を<br>楽しみにする</p>
+      </div>
+    </div>
+    <div class="insight-box">
+      <p>デジタル広告がスクロールで消える「一過性」なのに対し、モノメディアは<strong>物理的に生活空間を占有する</strong>ことで、このループを半永久的に回す。ここが革新。</p>
+    </div>
+  </div>
+
+  <!-- 3: Core hypothesis -->
+  <div class="slide" data-slide="3">
+    <span class="slide-number">3 / 14</span>
+    <div class="accent-line"></div>
+    <h2>ただし、このループには<br>止まるリスクがある。</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">ファンは買った直後は必ずタッチする。問題は<strong>2回目以降</strong>。</p>
+    <div class="hypothesis">
+      <h3>「またかざしたくなる理由」が無ければ、<br>アクスタはただの置物に戻る。</h3>
+      <p>LTM（ライフタイムメディア）が成立するか否かは、リピートタッチ率で決まる。<br>つまりこの事業の生命線は「ループを回し続ける仕組み」にある。</p>
+    </div>
+  </div>
+
+  <!-- 4: Three variables -->
+  <div class="slide" data-slide="4">
+    <span class="slide-number">4 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">Key Variables</span>
+    <h2>ループを回し続ける<br>3つの変数。</h2>
+    <div class="vars">
+      <div class="var-card active-var">
+        <div class="var-num">1</div>
+        <h3>コンテンツの鮮度</h3>
+        <p>「新しいものがある」と思えるか。更新が止まった瞬間、タッチの動機が消える。</p>
+      </div>
+      <div class="var-card active-var">
+        <div class="var-num">2</div>
+        <h3>体験の関連性</h3>
+        <p>自分に関係あるコンテンツが出てくるか。全員同じ体験では飽きが早い。</p>
+      </div>
+      <div class="var-card active-var">
+        <div class="var-num">3</div>
+        <h3>運用の持続性</h3>
+        <p>IPが増えても回る仕組みがあるか。人手運用は3タイトル超えたら破綻する。</p>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top: 1.5rem;">
+      <p>この3変数を<strong>ソフトウェアとAIで支える</strong>のが、2WINSの役割です。</p>
+    </div>
+  </div>
+
+  <!-- 5: Solution 1 - Data + Delivery -->
+  <div class="slide" data-slide="5">
+    <span class="slide-number">5 / 14</span>
+    <div class="accent-line"></div>
+    <div class="solution-header">
+      <span class="solution-num">変数 1 + 2</span>
+      <span class="solution-label">鮮度 × 関連性</span>
+    </div>
+    <h2>データ基盤 + 配信エンジン</h2>
+    <div class="items">
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">全タッチの行動データをリアルタイム収集・蓄積</div>
+          <div class="item-reason">→ 誰が・いつ・何回・何秒見たかを構造化データとして保持</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">ユーザーごとにコンテンツと広告を出し分ける配信制御</div>
+          <div class="item-reason">→ 全員同じ体験から「あなただけの体験」へ。リピート動機を作る</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">タッチ率が最も高い曜日・時間帯を分析し、配信タイミングを最適化</div>
+          <div class="item-reason">→ 新コンテンツの公開タイミングで初動タッチ率が変わる</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">A/Bテスト基盤でコンテンツ構成の効果を検証</div>
+          <div class="item-reason">→ 勘ではなくデータで「何が効くか」を回す</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6: Solution 2 - Production AI -->
+  <div class="slide" data-slide="6">
+    <span class="slide-number">6 / 14</span>
+    <div class="accent-line"></div>
+    <div class="solution-header">
+      <span class="solution-num">変数 1</span>
+      <span class="solution-label">鮮度</span>
+    </div>
+    <h2>コンテンツ制作支援AI</h2>
+    <p class="subtitle" style="margin-bottom: 0.5rem;">更新頻度はこの事業の生命線。だが、毎回の制作にはコストがかかる。</p>
+    <div class="items">
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">既存素材から背景・テロップ・レイアウト違いのバリエーションを自動生成</div>
+          <div class="item-reason">→ 1回の撮影素材から複数コンテンツを作り、更新頻度を上げる</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">字幕・テロップの自動付与、配信フォーマットへの自動変換</div>
+          <div class="item-reason">→ 編集工数を削減し、制作→公開のリードタイムを短縮</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">制作進行の管理ダッシュボード</div>
+          <div class="item-reason">→ 複数IP並行時に「どのタイトルの更新が滞っているか」を一目で把握</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7: Solution 3 - Operations -->
+  <div class="slide" data-slide="7">
+    <span class="slide-number">7 / 14</span>
+    <div class="accent-line"></div>
+    <div class="solution-header">
+      <span class="solution-num">変数 3</span>
+      <span class="solution-label">持続性</span>
+    </div>
+    <h2>運用自動化</h2>
+    <p class="subtitle" style="margin-bottom: 0.5rem;">1タイトルなら人手で回せる。<br>10タイトルになったとき、仕組みが無ければ破綻する。</p>
+    <div class="items">
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">パートナー向けレポートの自動生成・定期配信</div>
+          <div class="item-reason">→ タイトルが増えるたびにレポート作成の手間が増えるのを防ぐ</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">NFC個体のライフサイクル管理（出荷→アクティベーション→利用状況）</div>
+          <div class="item-reason">→ 数万〜数十万のNFC個体を一元管理する基盤</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item-icon"></div>
+        <div>
+          <div class="item-text">キャンペーンの自動設定（期間限定コンテンツの出し入れ）</div>
+          <div class="item-reason">→ 設定ミスや対応漏れのリスクを仕組みで防ぐ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8: 2WINS intro -->
+  <div class="slide" data-slide="8">
+    <span class="slide-number">8 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">About 2WINS</span>
+    <h2>東大松尾研発、<br>企業の「ツインズ」になる<br>AIスタートアップ。</h2>
+    <div class="cards" style="margin-top: 1rem;">
+      <div class="card">
+        <div class="card-label">出自</div>
+        <h3>松尾研発スタートアップ認定</h3>
+        <p>松尾研究室からスカウトを受け資本提携。PKSHA・DeepXと同列の認定企業。</p>
+      </div>
+      <div class="card">
+        <div class="card-label">チーム</div>
+        <h3>研究者密度の高いAIチーム</h3>
+        <p>メンバーの大半がAI研究機関出身。言語・画像・データサイエンスの専門家集団。2022年創業、5期目。</p>
+      </div>
+      <div class="card">
+        <div class="card-label">パートナー</div>
+        <h3>大手〜上場企業と幅広く共創</h3>
+        <p>Panasonic、東京ガス、MUFG、トヨタ車体研究所、AppBankなど多業種で実績。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9: 2WINS Model -->
+  <div class="slide" data-slide="9">
+    <span class="slide-number">9 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">2WINS Model</span>
+    <h2>社内チームとして入り込み、<br>共にプロダクトを作り、<br>KPI連動で共に稼ぐ。</h2>
+    <div class="flow">
+      <div class="flow-step">
+        <h3>Phase 1</h3>
+        <p>クラウドAI事業部<br>パートナー社内に入り込む</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <h3>Phase 2</h3>
+        <p>共同事業化<br>成果物を横展開</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step active-step">
+        <h3>Phase 3</h3>
+        <p>KPI連動<br>プロフィットシェア</p>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top: 2rem;">
+      <p>受託開発ではなく<strong>共創</strong>。小さくPoCから始めて、事業が伸びれば全員が潤う座組。<br>この型がモノメディアの「チャリンチャリンモデル」にそのまま乗る。</p>
+    </div>
+  </div>
+
+  <!-- 10: Cases -->
+  <div class="slide" data-slide="10">
+    <span class="slide-number">10 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">Track Record</span>
+    <h2>この型で成果を出してきた実績。</h2>
+    <div class="cards" style="grid-template-columns: 1fr 1fr; margin-top: 1rem;">
+      <div class="card">
+        <div class="card-label">東京ガス — 共同事業</div>
+        <h3>AI補助金自動申請<br>特許取得済み</h3>
+        <p>LLM×RPAで申請プロセスを自動化。申請時間を10分の1に短縮。共同事業として推進し、技術で特許を取得。</p>
+      </div>
+      <div class="card">
+        <div class="card-label">アペルザ — AI事業部</div>
+        <h3>製造業DXプラットフォームの<br>AI基盤を構築</h3>
+        <p>LLM×AI-OCRで製造業向けプラットフォームを強化。2WINSがパートナー社内のAI事業部として入り込み、継続的に価値を拡張。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11: 3-company structure -->
+  <div class="slide" data-slide="11">
+    <span class="slide-number">11 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">Structure</span>
+    <h2>3社の座組：<br>それぞれの専門で分担する。</h2>
+    <div class="arch-row" style="margin-top: 1.5rem;">
+      <div class="arch-block" style="flex: 1;">
+        <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">MBJ</h3>
+        <p style="font-size: 1rem; color: #555;">NFC搭載グッズの製造<br>品質管理・検品体制<br>ハードウェア技術</p>
+      </div>
+      <div class="arch-block" style="flex: 1;">
+        <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">GO</h3>
+        <p style="font-size: 1rem; color: #555;">クリエイティブ戦略<br>事業開発・営業<br>ブランド構築</p>
+      </div>
+      <div class="arch-block highlight" style="flex: 1;">
+        <h3 style="font-size: 1.3rem; margin-bottom: 1rem;">2WINS</h3>
+        <p style="font-size: 1rem; color: #555;">データ基盤・配信制御<br>制作支援AI<br>運用自動化</p>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top: 2rem;">
+      <p>ハードはMBJ、クリエイティブと事業開発はGO、<strong>ソフトウェアとAIは2WINS</strong>。<br>領域が重ならないから、互いの専門に集中できる。</p>
+    </div>
+  </div>
+
+  <!-- 12: Roadmap -->
+  <div class="slide" data-slide="12">
+    <span class="slide-number">12 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">Roadmap</span>
+    <h2>進め方</h2>
+    <div class="roadmap">
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-num">Phase 1 — PoC</div>
+        <h3>1タイトルで検証</h3>
+        <p>データ基盤と配信エンジンのMVPを構築。<br>リピートタッチ率を計測し、ループが回ることを実証する。</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-num">Phase 2 — 共同事業化</div>
+        <h3>仕組みを整え、横展開</h3>
+        <p>制作支援AIと運用自動化を導入。<br>複数IPに展開しても回る体制を構築。</p>
+      </div>
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-num">Phase 3 — スケール</div>
+        <h3>KPI連動プロフィットシェア</h3>
+        <p>事業として自走する段階。<br>成果に連動した収益分配モデルへ移行。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13: What to verify in PoC -->
+  <div class="slide" data-slide="13">
+    <span class="slide-number">13 / 14</span>
+    <div class="accent-line"></div>
+    <span class="tag">PoC Design</span>
+    <h2>PoCで検証すべきこと。</h2>
+    <p class="subtitle" style="margin-bottom: 1.5rem;">最初の1タイトルで、以下を明らかにする。</p>
+    <div class="cards" style="grid-template-columns: 1fr 1fr;">
+      <div class="card">
+        <div class="card-label">ユーザー行動</div>
+        <ul>
+          <li>購入後、何日目に初回タッチが起きるか</li>
+          <li>週あたり何回タッチされるか（減衰カーブ）</li>
+          <li>コンテンツ更新後、タッチ率はどれだけ回復するか</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">事業性</div>
+        <ul>
+          <li>コンテンツ1本あたりの制作コスト</li>
+          <li>AI支援でどこまでコストを下げられるか</li>
+          <li>出し分けの有無でエンゲージメント差が出るか</li>
+        </ul>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top: 1.5rem;">
+      <p>最初から大きく張るのではなく、<strong>仮説を検証して数字で語れる状態を作る</strong>。<br>その数字があれば、次のIPへの横展開もスポンサーへの営業も格段にやりやすくなる。</p>
+    </div>
+  </div>
+
+  <!-- 14: Next Step -->
+  <div class="slide end-slide" data-slide="14">
+    <span class="slide-number">14 / 14</span>
+    <div class="accent-line" style="margin: 0 auto 2rem auto;"></div>
+    <h1>まず1タイトルで<br>PoCから始めましょう。</h1>
+    <p class="subtitle" style="margin-top: 1rem;">小さく作って、一緒に検証する。<br>数字が出れば、一気にスケールできる。</p>
+  </div>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="nav-hint">← →  キーで移動</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const total = slides.length;
+  let current = 0;
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    const prev = current;
+    current = n;
+    slides[current].classList.add('active');
+    setTimeout(() => slides[prev].classList.remove('exit'), 500);
+    progress.style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? goTo(current + 1) : goTo(current - 1); }
+  });
+
+  document.addEventListener('click', (e) => {
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.7) goTo(current + 1);
+    else if (x < 0.3) goTo(current - 1);
+  });
+
+  progress.style.width = (1 / total * 100) + '%';
+</script>
+
+</body>
+</html>
