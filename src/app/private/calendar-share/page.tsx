@@ -20,7 +20,7 @@ function getDaysInMonth(year: number, month: number) {
 }
 
 function getFirstDayOfWeek(year: number, month: number) {
-  return new Date(year, month - 1, 1).getDay(); // 0=Sun
+  return new Date(year, month - 1, 1).getDay();
 }
 
 export default function CalendarSharePage() {
@@ -69,110 +69,225 @@ export default function CalendarSharePage() {
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <div style={{ fontFamily: "-apple-system, sans-serif", maxWidth: 480, margin: "0 auto", padding: "16px 8px", background: "#fff", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <button onClick={prevMonth} style={navBtn}>‹</button>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#1a1a1a" }}>
-          {year}年{month}月
-        </h2>
-        <button onClick={nextMonth} style={navBtn}>›</button>
+    <div style={{ fontFamily: "'Albert Sans', -apple-system, sans-serif", minHeight: "100vh", padding: "20px 12px 40px", boxSizing: "border-box" }}>
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateX(-50%) translateY(100%); }
+          to   { transform: translateX(-50%) translateY(0); }
+        }
+        @keyframes shimmer {
+          from { background-position: 200% 0; }
+          to   { background-position: -200% 0; }
+        }
+        .cal-cell-outing:hover {
+          background: #e6e9ff !important;
+        }
+      `}</style>
+
+      <div style={{ maxWidth: 430, margin: "0 auto" }}>
+        {/* Card */}
+        <div style={{ background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "20px 16px 24px" }}>
+
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <button onClick={prevMonth} style={circleBtn}>‹</button>
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.3px", margin: 0 }}>
+              {year}年{month}月
+            </h2>
+            <button onClick={nextMonth} style={circleBtn}>›</button>
+          </div>
+
+          {/* Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+            {/* Weekday headers */}
+            {WEEKDAYS.map((d, i) => (
+              <div key={d} style={{
+                height: 32,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 11,
+                fontWeight: 600,
+                color: i === 0 ? "#e54040" : i === 6 ? "#2b6fd4" : "#888899",
+              }}>
+                {d}
+              </div>
+            ))}
+
+            {/* Day cells */}
+            {loading
+              ? Array.from({ length: 35 }).map((_, i) => (
+                  <div key={i} style={{
+                    height: 72,
+                    borderRadius: 10,
+                    background: "linear-gradient(90deg, #ececee 25%, #f4f4f6 50%, #ececee 75%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.4s infinite",
+                    border: "1px solid transparent",
+                  }} />
+                ))
+              : cells.map((day, i) => {
+                  if (!day) return (
+                    <div key={i} style={{ height: 72, border: "1px solid transparent", borderRadius: 10 }} />
+                  );
+
+                  const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                  const data = dayMap.get(dateStr);
+                  const hasOuting = data && data.outings.length > 0;
+                  const isToday = dateStr === todayStr;
+                  const dow = (firstDow + day - 1) % 7;
+                  const isSun = dow === 0;
+                  const isSat = dow === 6;
+
+                  const borderColor = isToday ? "#4f6ef7" : hasOuting ? "#c8cef7" : "#e8e8ec";
+                  const bgColor = hasOuting ? "#f0f2ff" : "#ffffff";
+
+                  return (
+                    <div
+                      key={i}
+                      className={hasOuting ? "cal-cell-outing" : ""}
+                      onClick={() => hasOuting && data && setSelectedDay(data)}
+                      style={{
+                        minHeight: 72,
+                        borderRadius: 10,
+                        padding: "6px 5px 5px",
+                        background: bgColor,
+                        border: `${isToday ? "1.5" : "1"}px solid ${borderColor}`,
+                        cursor: hasOuting ? "pointer" : "default",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      {/* Day number */}
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 4 }}>
+                        {isToday ? (
+                          <span style={{
+                            width: 24, height: 24,
+                            borderRadius: "50%",
+                            background: "#4f6ef7",
+                            color: "#fff",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 13,
+                            fontWeight: 700,
+                            lineHeight: 1,
+                          }}>{day}</span>
+                        ) : (
+                          <span style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: isSun ? "#e54040" : isSat ? "#2b6fd4" : "#1a1a1a",
+                            lineHeight: "24px",
+                          }}>{day}</span>
+                        )}
+                      </div>
+
+                      {/* Outing pills */}
+                      {hasOuting && data && data.outings.slice(0, 2).map((o, oi) => (
+                        <div key={oi} style={{
+                          background: "#eef0ff",
+                          borderRadius: 5,
+                          padding: "3px 5px",
+                          marginBottom: 2,
+                        }}>
+                          <div style={{ fontSize: 9, fontWeight: 600, color: "#4f6ef7", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {o.departure}〜{o.return}
+                          </div>
+                          {o.destinations.length > 0 && (
+                            <div style={{ fontSize: 9, fontWeight: 500, color: "#555566", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {o.destinations.join("・")}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {hasOuting && data && data.outings.length > 2 && (
+                        <div style={{ fontSize: 9, color: "#888899", textAlign: "center" }}>+{data.outings.length - 2}</div>
+                      )}
+                    </div>
+                  );
+                })
+            }
+          </div>
+        </div>
       </div>
 
-      {/* Calendar grid (headers + cells in one grid) */}
-      {loading ? (
-        <div style={{ textAlign: "center", padding: 40, color: "#888", fontSize: 14 }}>読み込み中...</div>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
-          {WEEKDAYS.map((d, i) => (
-            <div key={d} style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: i === 0 ? "#e53935" : i === 6 ? "#1565c0" : "#888", padding: "4px 0" }}>
-              {d}
-            </div>
-          ))}
-          {cells.map((day, i) => {
-            if (!day) return <div key={i} />;
-            const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const data = dayMap.get(dateStr);
-            const hasOuting = data && data.outings.length > 0;
-            const isToday = dateStr === todayStr;
-            const dow = (firstDow + day - 1) % 7;
-            const isSun = dow === 0;
-            const isSat = dow === 6;
-
-            return (
-              <div
-                key={i}
-                onClick={() => data && hasOuting && setSelectedDay(data)}
-                style={{
-                  minHeight: 72,
-                  borderRadius: 8,
-                  padding: "6px 4px",
-                  background: isToday ? "#e8f0fe" : hasOuting ? "#f8f9ff" : "#fafafa",
-                  border: isToday ? "1.5px solid #4285f4" : "1px solid #eee",
-                  cursor: hasOuting ? "pointer" : "default",
-                  position: "relative",
-                }}
-              >
-                <div style={{
-                  fontSize: 13,
-                  fontWeight: isToday ? 700 : 500,
-                  color: isSun ? "#e53935" : isSat ? "#1565c0" : "#1a1a1a",
-                  marginBottom: 4,
-                  textAlign: "center",
-                }}>
-                  {isToday ? (
-                    <span style={{ background: "#4285f4", color: "#fff", borderRadius: "50%", width: 22, height: 22, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{day}</span>
-                  ) : day}
-                </div>
-                {hasOuting && data && data.outings.map((o, oi) => (
-                  <div key={oi} style={{ fontSize: 10, color: "#3a3a8c", background: "#e8eaf6", borderRadius: 4, padding: "2px 4px", marginBottom: 2, lineHeight: 1.4 }}>
-                    <div style={{ fontWeight: 600 }}>{o.departure}〜{o.return}</div>
-                    <div style={{ color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {o.destinations.join("・")}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Detail modal */}
+      {/* Modal */}
       {selectedDay && (
         <div
           onClick={() => setSelectedDay(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
+          style={{
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,0.35)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+            zIndex: 200,
+          }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: "20px 20px 0 0", padding: 24, width: "100%", maxWidth: 480, maxHeight: "70vh", overflowY: "auto" }}
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "100%",
+              maxWidth: 430,
+              background: "#ffffff",
+              borderRadius: "24px 24px 0 0",
+              boxShadow: "0 -4px 32px rgba(0,0,0,0.12)",
+              maxHeight: "75vh",
+              overflowY: "auto",
+              animation: "slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
+              paddingBottom: 16,
+            }}
           >
-            <div style={{ width: 36, height: 4, background: "#ddd", borderRadius: 2, margin: "0 auto 16px" }} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: "#1a1a1a" }}>
+            {/* Drag handle */}
+            <div style={{ width: 36, height: 4, background: "#e0e0e6", borderRadius: 2, margin: "12px auto 0" }} />
+
+            {/* Date heading */}
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", margin: "16px 20px 16px", paddingBottom: 12, borderBottom: "1px solid #f0f0f4" }}>
               {selectedDay.date.replace(/-/g, "/")}の外出
             </h3>
+
+            {/* Outing cards */}
             {selectedDay.outings.map((o, i) => (
-              <div key={i} style={{ background: "#f5f7ff", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, color: "#555" }}>出発</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>{o.departure}</span>
+              <div key={i} style={{ margin: "0 16px 12px", background: "#f7f8ff", borderRadius: 16, padding: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "#888899" }}>出発</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: "#1a1a1a" }}>{o.departure}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, color: "#555" }}>帰宅</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>{o.return}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "#888899" }}>帰宅</span>
+                  <span style={{ fontSize: 22, fontWeight: 700, color: "#1a1a1a" }}>{o.return}</span>
                 </div>
-                <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: 8, marginTop: 4 }}>
-                  <span style={{ fontSize: 13, color: "#555" }}>行き先</span>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "#3a3a8c", marginTop: 4 }}>
-                    {o.destinations.join(" → ")}
+                {o.destinations.length > 0 && (
+                  <div style={{ borderTop: "1px solid #e8e8ec", paddingTop: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#888899", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>行き先</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "#4f6ef7" }}>
+                      {o.destinations.join(" → ")}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ))}
+
+            {/* Close button */}
             <button
               onClick={() => setSelectedDay(null)}
-              style={{ width: "100%", padding: "12px", background: "#f0f0f0", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 600, color: "#333", cursor: "pointer", marginTop: 4 }}
+              style={{
+                display: "block",
+                width: "calc(100% - 32px)",
+                margin: "4px 16px 0",
+                padding: 14,
+                background: "#f0f0f4",
+                border: "none",
+                borderRadius: 14,
+                fontSize: 15,
+                fontWeight: 600,
+                color: "#555566",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
             >
               閉じる
             </button>
@@ -183,12 +298,19 @@ export default function CalendarSharePage() {
   );
 }
 
-const navBtn: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  fontSize: 24,
-  color: "#555",
+const circleBtn: React.CSSProperties = {
+  width: 36,
+  height: 36,
+  borderRadius: "50%",
+  background: "#ffffff",
+  border: "1px solid #e8e8ec",
+  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 20,
+  color: "#888899",
   cursor: "pointer",
-  padding: "4px 12px",
-  borderRadius: 8,
+  padding: 0,
+  lineHeight: 1,
 };
