@@ -79,20 +79,16 @@ export default function CalendarSharePage() {
         <button onClick={nextMonth} style={navBtn}>›</button>
       </div>
 
-      {/* Weekday headers */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", marginBottom: 4 }}>
-        {WEEKDAYS.map((d, i) => (
-          <div key={d} style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: i === 0 ? "#e53935" : i === 6 ? "#1565c0" : "#888", padding: "4px 0" }}>
-            {d}
-          </div>
-        ))}
-      </div>
-
-      {/* Calendar grid */}
+      {/* Calendar grid (headers + cells in one grid) */}
       {loading ? (
         <div style={{ textAlign: "center", padding: 40, color: "#888", fontSize: 14 }}>読み込み中...</div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
+          {WEEKDAYS.map((d, i) => (
+            <div key={d} style={{ textAlign: "center", fontSize: 12, fontWeight: 600, color: i === 0 ? "#e53935" : i === 6 ? "#1565c0" : "#888", padding: "4px 0" }}>
+              {d}
+            </div>
+          ))}
           {cells.map((day, i) => {
             if (!day) return <div key={i} />;
             const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
