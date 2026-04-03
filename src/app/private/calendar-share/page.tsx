@@ -69,7 +69,7 @@ export default function CalendarSharePage() {
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <div style={{ fontFamily: "'Albert Sans', -apple-system, sans-serif", minHeight: "100vh", padding: "20px 12px 40px", boxSizing: "border-box" }}>
+    <div style={{ fontFamily: "'Albert Sans', -apple-system, sans-serif", width: "100%", minHeight: "100vh", padding: "20px 16px 40px", boxSizing: "border-box" }}>
       <style>{`
         @keyframes slideUp {
           from { transform: translateX(-50%) translateY(100%); }
@@ -105,7 +105,7 @@ export default function CalendarSharePage() {
         }
       `}</style>
 
-      <div style={{ maxWidth: 430, margin: "0 auto" }}>
+      <div style={{ maxWidth: 700, margin: "0 auto" }}>
         {/* Card */}
         <div style={{ background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "20px 16px 24px" }}>
 
