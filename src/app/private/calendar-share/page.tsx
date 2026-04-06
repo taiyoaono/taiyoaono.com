@@ -103,16 +103,54 @@ export default function CalendarSharePage() {
             animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
           }
         }
+        /* Responsive container */
+        @media (min-width: 640px) {
+          .cal-container {
+            max-width: 100% !important;
+            padding: 32px 40px 48px !important;
+          }
+          .cal-card {
+            padding: 28px 28px 32px !important;
+          }
+          .cal-cell {
+            min-height: 100px !important;
+            padding: 8px 8px 6px !important;
+          }
+          .cal-cell .pill {
+            padding: 4px 6px !important;
+          }
+          .cal-cell .pill-time {
+            font-size: 10px !important;
+          }
+          .cal-cell .pill-dest {
+            font-size: 10px !important;
+          }
+          .cal-header-title {
+            font-size: 24px !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .cal-cell {
+            min-height: 120px !important;
+            padding: 10px 10px 8px !important;
+          }
+          .cal-cell .pill-time {
+            font-size: 11px !important;
+          }
+          .cal-cell .pill-dest {
+            font-size: 11px !important;
+          }
+        }
       `}</style>
 
-      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+      <div className="cal-container" style={{ maxWidth: 700, margin: "0 auto" }}>
         {/* Card */}
-        <div style={{ background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "20px 16px 24px" }}>
+        <div className="cal-card" style={{ background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "20px 16px 24px" }}>
 
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <button onClick={prevMonth} style={circleBtn}>‹</button>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.3px", margin: 0 }}>
+            <h2 className="cal-header-title" style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.3px", margin: 0 }}>
               {year}年{month}月
             </h2>
             <button onClick={nextMonth} style={circleBtn}>›</button>
@@ -149,7 +187,7 @@ export default function CalendarSharePage() {
                 ))
               : cells.map((day, i) => {
                   if (!day) return (
-                    <div key={i} style={{ height: 72, border: "1px solid transparent", borderRadius: 10 }} />
+                    <div key={i} className="cal-cell" style={{ height: 72, border: "1px solid transparent", borderRadius: 10 }} />
                   );
 
                   const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -166,7 +204,7 @@ export default function CalendarSharePage() {
                   return (
                     <div
                       key={i}
-                      className={hasOuting ? "cal-cell-outing" : ""}
+                      className={`cal-cell ${hasOuting ? "cal-cell-outing" : ""}`}
                       onClick={() => hasOuting && data && setSelectedDay(data)}
                       style={{
                         minHeight: 72,
@@ -205,17 +243,17 @@ export default function CalendarSharePage() {
 
                       {/* Outing pills */}
                       {hasOuting && data && data.outings.slice(0, 2).map((o, oi) => (
-                        <div key={oi} style={{
+                        <div key={oi} className="pill" style={{
                           background: "#eef0ff",
                           borderRadius: 5,
                           padding: "3px 5px",
                           marginBottom: 2,
                         }}>
-                          <div style={{ fontSize: 9, fontWeight: 600, color: "#4f6ef7", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          <div className="pill-time" style={{ fontSize: 9, fontWeight: 600, color: "#4f6ef7", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             {o.departure}〜{o.return}
                           </div>
                           {o.destinations.length > 0 && (
-                            <div style={{ fontSize: 9, fontWeight: 500, color: "#555566", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            <div className="pill-dest" style={{ fontSize: 9, fontWeight: 500, color: "#555566", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                               {o.destinations.join("・")}
                             </div>
                           )}
