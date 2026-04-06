@@ -103,6 +103,12 @@ export default function CalendarSharePage() {
             animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
           }
         }
+        /* Uniform cell sizing */
+        .cal-cell {
+          aspect-ratio: 5 / 4;
+          min-height: auto !important;
+          height: auto !important;
+        }
         /* Responsive container */
         @media (min-width: 640px) {
           .cal-container {
@@ -113,7 +119,6 @@ export default function CalendarSharePage() {
             padding: 28px 28px 32px !important;
           }
           .cal-cell {
-            min-height: 100px !important;
             padding: 8px 8px 6px !important;
           }
           .cal-cell .pill {
@@ -131,7 +136,6 @@ export default function CalendarSharePage() {
         }
         @media (min-width: 1024px) {
           .cal-cell {
-            min-height: 120px !important;
             padding: 10px 10px 8px !important;
           }
           .cal-cell .pill-time {
@@ -176,8 +180,7 @@ export default function CalendarSharePage() {
             {/* Day cells */}
             {loading
               ? Array.from({ length: 35 }).map((_, i) => (
-                  <div key={i} style={{
-                    height: 72,
+                  <div key={i} className="cal-cell" style={{
                     borderRadius: 10,
                     background: "linear-gradient(90deg, #ececee 25%, #f4f4f6 50%, #ececee 75%)",
                     backgroundSize: "200% 100%",
@@ -187,7 +190,7 @@ export default function CalendarSharePage() {
                 ))
               : cells.map((day, i) => {
                   if (!day) return (
-                    <div key={i} className="cal-cell" style={{ height: 72, border: "1px solid transparent", borderRadius: 10 }} />
+                    <div key={i} className="cal-cell" style={{ border: "1px solid transparent", borderRadius: 10 }} />
                   );
 
                   const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -207,9 +210,9 @@ export default function CalendarSharePage() {
                       className={`cal-cell ${hasOuting ? "cal-cell-outing" : ""}`}
                       onClick={() => hasOuting && data && setSelectedDay(data)}
                       style={{
-                        minHeight: 72,
                         borderRadius: 10,
                         padding: "6px 5px 5px",
+                        overflow: "hidden",
                         background: bgColor,
                         border: `${isToday ? "1.5" : "1"}px solid ${borderColor}`,
                         cursor: hasOuting ? "pointer" : "default",
