@@ -67,9 +67,10 @@ export default function CalendarSharePage() {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
   while (cells.length % 7 !== 0) cells.push(null);
+  const numRows = cells.length / 7;
 
   return (
-    <div style={{ fontFamily: "'Albert Sans', -apple-system, sans-serif", width: "100%", minHeight: "100vh", padding: "20px 16px 40px", boxSizing: "border-box" }}>
+    <div style={{ fontFamily: "'Albert Sans', -apple-system, sans-serif", width: "100%", height: "100dvh", padding: "12px 12px 16px", boxSizing: "border-box", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <style>{`
         @keyframes slideUp {
           from { transform: translateX(-50%) translateY(100%); }
@@ -103,23 +104,13 @@ export default function CalendarSharePage() {
             animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
           }
         }
-        /* Uniform cell sizing */
-        .cal-cell {
-          aspect-ratio: 5 / 4;
-          min-height: auto !important;
-          height: auto !important;
-        }
         /* Responsive container */
         @media (min-width: 640px) {
-          .cal-container {
-            max-width: 100% !important;
-            padding: 32px 40px 48px !important;
+          .cal-outer {
+            padding: 20px 32px 24px !important;
           }
           .cal-card {
-            padding: 28px 28px 32px !important;
-          }
-          .cal-cell {
-            padding: 8px 8px 6px !important;
+            padding: 24px 24px 20px !important;
           }
           .cal-cell .pill {
             padding: 4px 6px !important;
@@ -135,9 +126,6 @@ export default function CalendarSharePage() {
           }
         }
         @media (min-width: 1024px) {
-          .cal-cell {
-            padding: 10px 10px 8px !important;
-          }
           .cal-cell .pill-time {
             font-size: 11px !important;
           }
@@ -147,12 +135,12 @@ export default function CalendarSharePage() {
         }
       `}</style>
 
-      <div className="cal-container" style={{ maxWidth: 700, margin: "0 auto" }}>
+      <div className="cal-container" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         {/* Card */}
-        <div className="cal-card" style={{ background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "20px 16px 24px" }}>
+        <div className="cal-card" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, background: "#ffffff", borderRadius: 24, boxShadow: "0 2px 16px rgba(0,0,0,0.08)", padding: "16px 12px 16px" }}>
 
           {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, flexShrink: 0 }}>
             <button onClick={prevMonth} style={circleBtn}>‹</button>
             <h2 className="cal-header-title" style={{ fontSize: 20, fontWeight: 600, color: "#1a1a1a", letterSpacing: "-0.3px", margin: 0 }}>
               {year}年{month}月
@@ -161,7 +149,7 @@ export default function CalendarSharePage() {
           </div>
 
           {/* Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+          <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gridTemplateRows: `auto repeat(${numRows}, 1fr)`, gap: 3, minHeight: 0 }}>
             {/* Weekday headers */}
             {WEEKDAYS.map((d, i) => (
               <div key={d} style={{
@@ -190,7 +178,7 @@ export default function CalendarSharePage() {
                 ))
               : cells.map((day, i) => {
                   if (!day) return (
-                    <div key={i} className="cal-cell" style={{ border: "1px solid transparent", borderRadius: 10 }} />
+                    <div key={i} className="cal-cell" style={{ border: "1px solid transparent", borderRadius: 10, minHeight: 0 }} />
                   );
 
                   const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -213,6 +201,7 @@ export default function CalendarSharePage() {
                         borderRadius: 10,
                         padding: "6px 5px 5px",
                         overflow: "hidden",
+                        minHeight: 0,
                         background: bgColor,
                         border: `${isToday ? "1.5" : "1"}px solid ${borderColor}`,
                         cursor: hasOuting ? "pointer" : "default",
