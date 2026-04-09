@@ -8,7 +8,7 @@ const content = {
     name: "青野 大洋",
     aboutTitle: "自己紹介",
     aboutContent:
-      '◎気軽に連絡ください！<br><br>・慶應義塾大学環境情報学部 <a href="https://met-lab.sfc.keio.ac.jp/wordpress/" target="_blank">気象学研究会（宮本研）</a>学部3年←神奈川県立湘南高校←横浜国大附属鎌倉小中<br>・<a href="https://life-is-tech.com" target="_blank">Life is Tech!（株）</a>で企業向けIT研修など<br>・<a href="https://ut-lab.toggle.co.jp" target="_blank">UT-Lab</a>メンバー<br>・理学的な環境や自然と、実学的な社会や経済活動、どちらにも強い関心があり、またそれらがテクノロジーで繋がっていくさまにもワクワクします。<br>・最近は気ままに天気の勉強、山登りやスキーなどをしています。<br><br>近況<br>・Sushi Tech Tokyo ITAMAEで4/29行きます<br>・革命的なレストラン検索アプリを４月にリリースします<br>・SFC内の環境系コミュニティを作っています（情報系：RGの環境版的なイメージ、ゼミ間の交流があるといいな）',
+      '◎気軽に連絡ください！<br><br>東大松尾研発AIスタートアップ <a href="https://www.2wins.ai" target="_blank">2WINS（株）</a><br><br>・慶應義塾大学環境情報学部 <a href="https://met-lab.sfc.keio.ac.jp/wordpress/" target="_blank">気象学研究会（宮本研）</a>学部3年←神奈川県立湘南高校←横浜国大附属鎌倉小中<br>・<a href="https://life-is-tech.com" target="_blank">Life is Tech!（株）</a>で企業向けIT研修など<br>・<a href="https://ut-lab.toggle.co.jp" target="_blank">UT-Lab</a>メンバー<br>・理学的な環境や自然と、実学的な社会や経済活動、どちらにも強い関心があり、またそれらがテクノロジーで繋がっていくさまにもワクワクします。<br>・最近は気ままに天気の勉強、山登りやスキーなどをしています。<br><br>近況<br>・Sushi Tech Tokyo ITAMAEで4/29行きます<br>・革命的なレストラン検索アプリを４月にリリースします<br>・SFC内の環境系コミュニティを作っています（情報系：RGの環境版的なイメージ、ゼミ間の交流があるといいな）',
     thatskyCopy: "— あの日、あの場所、あの空に、もう一度会いに行く。",
     thatskyDesc:
       "過去の空を限りなくリアルに再現する空画像ジェネレーター。場所・日時・方角を指定すると、過去の気象データと太陽角度をもとにリアルな画像を生成。あなたが生まれたその時の空、今見てみたくありませんか。",
@@ -19,7 +19,7 @@ const content = {
     name: "Taiyo Aono",
     aboutTitle: "About Me",
     aboutContent:
-      'Feel free to reach out!<br><br>・Junior at Keio University SFC, <a href="https://met-lab.sfc.keio.ac.jp/wordpress/" target="_blank">Meteorology Lab (Miyamoto Lab)</a> ← Shonan High School ← Yokohama National Univ. Kamakura Elem/JHS<br>・Corporate IT training at <a href="https://life-is-tech.com" target="_blank">Life is Tech! Inc.</a><br>・<a href="https://ut-lab.toggle.co.jp" target="_blank">UT-Lab</a> member<br>・Passionate about both the natural sciences and business/economics, and excited by how technology bridges the two.<br>・Currently studying meteorology, hiking, and skiing.<br><br>Updates<br>・Attending Sushi Tech Tokyo ITAMAE on 4/29<br>・Launching a restaurant search app in April<br>・Building an environment-focused community at SFC',
+      'Feel free to reach out!<br><br>AI startup from UTokyo Matsuo Lab: <a href="https://www.2wins.ai" target="_blank">2WINS Inc.</a><br><br>・Junior at Keio University SFC, <a href="https://met-lab.sfc.keio.ac.jp/wordpress/" target="_blank">Meteorology Lab (Miyamoto Lab)</a> ← Shonan High School ← Yokohama National Univ. Kamakura Elem/JHS<br>・Corporate IT training at <a href="https://life-is-tech.com" target="_blank">Life is Tech! Inc.</a><br>・<a href="https://ut-lab.toggle.co.jp" target="_blank">UT-Lab</a> member<br>・Passionate about both the natural sciences and business/economics, and excited by how technology bridges the two.<br>・Currently studying meteorology, hiking, and skiing.<br><br>Updates<br>・Attending Sushi Tech Tokyo ITAMAE on 4/29<br>・Launching a restaurant search app in April<br>・Building an environment-focused community at SFC',
     thatskyCopy: "— Revisit the sky of that day, that place, once more.",
     thatskyDesc:
       "A sky image generator that recreates past skies with stunning realism. Specify a location, date/time, and direction — it generates a realistic image based on historical weather data and solar angles. The sky the moment you were born — wouldn't you like to see it?",
